@@ -52,6 +52,7 @@ app.all('/api/register', wrapHandler(require('./api/register')));
 app.all('/api/send-otp', wrapHandler(require('./api/send-otp')));
 app.all('/api/verify-otp', wrapHandler(require('./api/verify-otp')));
 app.all('/api/get-otp', wrapHandler(require('./api/get-otp')));
+app.all('/api/test-email', wrapHandler(require('./api/test-email')));
 app.all('/api/upi-qr', wrapHandler(require('./api/upi-qr')));
 app.all('/api/upi-config', wrapHandler(require('./api/upi-config')));
 app.all('/api/validate-utr', wrapHandler(require('./api/validate-utr')));
