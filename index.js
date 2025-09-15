@@ -63,8 +63,14 @@ app.get('*', (req, res) => {
 
 // Only start server if not in serverless environment
 if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
-    app.listen(PORT, '0.0.0.0', () => {
-        console.log(`🚀 SHREST MAHOTSAV Server running on port ${PORT}`);
+    const initializeDatabase = require('./api/db-init');
+    initializeDatabase().then(() => {
+        app.listen(PORT, '0.0.0.0', () => {
+            console.log(`🚀 SHREST MAHOTSAV Server running on port ${PORT}`);
+        });
+    }).catch(error => {
+        console.error("Failed to initialize database. Server not started.", error);
+        process.exit(1);
     });
 }
 
