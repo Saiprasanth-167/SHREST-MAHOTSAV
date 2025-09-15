@@ -285,19 +285,12 @@
 			<div class="form-group">
 				<label for="email">Email</label>
 				<input type="email" id="email" name="email" required>
-				<button type="button" id="send-otp" style="margin-top:8px;">Send OTP</button>
-				<button type="button" id="resend-otp" style="margin-top:8px; margin-left:8px; display:none;">Resend OTP</button>
-				<div class="form-group hidden" id="otp-group">
-					<label for="otp">Enter OTP</label>
-					<input type="text" id="otp" name="otp" maxlength="6">
-					<button type="button" id="verify-otp" style="margin-top:8px; display:none;">Verify OTP</button>
-				</div>
 				<div class="error" id="email-error"></div>
 				<div class="success" id="email-success"></div>
 			</div>
 			<input type="hidden" id="utr-hidden" name="utr">
 			<input type="hidden" id="screenshot-hidden" name="screenshot">
-			<button type="submit" id="submit-btn" disabled>Submit</button>
+			<button type="submit" id="submit-btn">Submit</button>
 		</form>
 	</div>
 
@@ -754,137 +747,7 @@
 		})();
 
 		// Email OTP AJAX using real backend (with robust handling)
-		let isVerifying = false;
-		function enableResend(show) {
-			document.getElementById('resend-otp').style.display = show ? 'inline-block' : 'none';
-		}
-		document.getElementById('send-otp').onclick = async function() {
-			const sendBtn = document.getElementById('send-otp');
-			sendBtn.disabled = true;
-			const email = document.getElementById('email').value.trim();
-			const errorDiv = document.getElementById('email-error');
-			const successDiv = document.getElementById('email-success');
-			errorDiv.textContent = '';
-			successDiv.textContent = '';
-			if (!/^\S+@\S+\.\S+$/.test(email)) {
-				errorDiv.textContent = 'Enter a valid email address.';
-				sendBtn.disabled = false;
-				return;
-			}
-			try {
-				const response = await fetch('/api/send-otp', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ email })
-				});
-				const ct = response.headers.get('content-type') || '';
-				if (!response.ok) {
-					const text = await response.text();
-					errorDiv.textContent = `HTTP ${response.status}: ${text.slice(0, 200)}`;
-					sendBtn.disabled = false;
-					return;
-				}
-				let data;
-				if (ct.includes('application/json')) {
-					data = await response.json();
-				} else {
-					const text = await response.text();
-					errorDiv.textContent = 'Unexpected response from server: ' + text.slice(0, 200);
-					sendBtn.disabled = false;
-					return;
-				}
-				if (data.success) {
-					document.getElementById('otp-group').classList.remove('hidden');
-					successDiv.textContent = 'OTP sent to your email.';
-					enableResend(true);
-				} else {
-					errorDiv.textContent = data.message || 'Failed to send OTP.';
-				}
-			} catch (e) {
-				errorDiv.textContent = 'Failed to send OTP: ' + e.message;
-			} finally {
-				sendBtn.disabled = false;
-			}
-		};
-
-		document.getElementById('resend-otp').onclick = async function() {
-			const resendBtn = document.getElementById('resend-otp');
-			const email = document.getElementById('email').value.trim();
-			const errorDiv = document.getElementById('email-error');
-			const successDiv = document.getElementById('email-success');
-			if (!/^\S+@\S+\.\S+$/.test(email)) {
-				errorDiv.textContent = 'Enter a valid email address.';
-				return;
-			}
-			resendBtn.disabled = true;
-			successDiv.textContent = '';
-			errorDiv.textContent = '';
-			try {
-				const response = await fetch('/api/send-otp', {
-					method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email })
-				});
-				const data = await response.json();
-				if (data.success) {
-					document.getElementById('otp-group').classList.remove('hidden');
-					document.getElementById('email-success').textContent = 'OTP resent.';
-				} else {
-					document.getElementById('email-error').textContent = data.message || 'Failed to resend OTP.';
-				}
-			} catch (e) {
-				document.getElementById('email-error').textContent = 'Failed to resend OTP: ' + e.message;
-			} finally {
-				setTimeout(() => { resendBtn.disabled = false; }, 10000);
-			}
-		};
-
-		async function verifyOtpAuto() {
-			if (isVerifying) return;
-			const email = document.getElementById('email').value.trim();
-			const otp = document.getElementById('otp').value.trim();
-			const errorDiv = document.getElementById('email-error');
-			const successDiv = document.getElementById('email-success');
-			if (!/^\d{6}$/.test(otp)) return;
-			isVerifying = true;
-			errorDiv.textContent = '';
-			successDiv.textContent = '';
-			try {
-				const response = await fetch('/api/verify-otp', {
-					method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, otp })
-				});
-				const ct = response.headers.get('content-type') || '';
-				if (!response.ok) {
-					const text = await response.text();
-					errorDiv.textContent = `HTTP ${response.status}: ${text.slice(0, 200)}`;
-					return;
-				}
-				let data;
-				if (ct.includes('application/json')) {
-					data = await response.json();
-				} else {
-					const text = await response.text();
-					errorDiv.textContent = 'Unexpected response from server: ' + text.slice(0, 200);
-					return;
-				}
-				if (data.success) {
-					successDiv.textContent = 'Email verified!';
-					document.getElementById('submit-btn').disabled = false;
-				} else {
-					errorDiv.textContent = data.message || 'Incorrect OTP. Please try again.';
-					document.getElementById('submit-btn').disabled = false; // keep enabled? safer to keep disabled
-					document.getElementById('submit-btn').disabled = true;
-				}
-			} catch (e) {
-				document.getElementById('email-error').textContent = 'Failed to verify OTP: ' + e.message;
-			} finally {
-				isVerifying = false;
-			}
-		}
-		document.getElementById('otp').addEventListener('input', () => {
-			const otp = document.getElementById('otp').value.trim();
-			if (/^\d{6}$/.test(otp)) {
-				verifyOtpAuto();
-			}
-		});
+		// Disabled: OTP verification is no longer required
 
 		// Form submission
 		document.getElementById('registration-form').onsubmit = async function(e) {
