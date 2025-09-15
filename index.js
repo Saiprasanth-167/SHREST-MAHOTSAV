@@ -55,6 +55,7 @@ app.all('/api/upi-config', wrapHandler(require('./api/upi-config')));
 app.all('/api/validate-utr', wrapHandler(require('./api/validate-utr')));
 app.all('/api/live-excel', wrapHandler(require('./api/live-excel')));
 app.all('/api/download-excel', wrapHandler(require('./api/download-excel')));
+app.all('/api/registrations/:utr', wrapHandler(require('./api/registrations/[utr]')));
 
 // Catch-all route
 app.get('*', (req, res) => {
