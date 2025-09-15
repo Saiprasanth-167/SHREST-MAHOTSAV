@@ -121,10 +121,8 @@ app.get('/api/upi-qr', async (req, res) => {
                 if (rows && rows.length) {
                     let updated = false;
                     const normalized = rows.map(row => {
-                        let r = { ...row };
-                        if (!('Section' in r)) { updated = true; r = { Section: '', ...r }; }
-                        if ('AmountPAID' in r && !('Amount' in r)) { updated = true; r.Amount = r.AmountPAID; delete r.AmountPAID; }
-                        return r;
+                        if (!('Section' in row)) { updated = true; return { Section: '', ...row }; }
+                        return row;
                     });
                     if (updated) {
                         const ws = XLSX.utils.json_to_sheet(normalized);
@@ -263,7 +261,7 @@ app.post('/api/register', async (req, res) => {
             Campus: entry.campus || '',
             Email: entry.email || '',
             UTR: entry.utr || '',
-            Amount: Number(entry.amount || 0),
+            AmountPAID: Number(entry.amount || 0),
             Events: Array.isArray(entry.events) ? entry.events.join(', ') : (entry.events || ''),
             QRCodeFile: entry.qrFile || '',
             Timestamp: entry.timestamp
@@ -427,23 +425,6 @@ th{background:#f0f4fa;text-align:left}
                 amount: obj.Amount,
                 events: obj.Events
             };
-            // If effectively cleared (all editable fields empty), delete instead of update
-            const editableKeys = ['Name','RegistrationNumber','Course','Branch','Section','Year','Campus','Email','Amount','Events'];
-            const isCleared = editableKeys.every(k => String(obj[k] || '').trim() === '' || (k === 'Amount' && (obj[k] === '' || Number(obj[k]) === 0)));
-            if (isCleared) {
-                if (!confirm('All fields are cleared. Delete this registration (UTR ' + utr + ')?')) return;
-                try {
-                    const res = await fetch('/api/registrations/' + encodeURIComponent(utr), { method: 'DELETE' });
-                    const ok = res.ok; const data = await res.json().catch(()=>({}));
-                    if (!ok || !data.success) throw new Error((data && data.message) || 'Delete failed');
-                    alert('Row deleted');
-                    location.reload();
-                    return;
-                } catch (err) {
-                    alert('Failed to delete: ' + (err && err.message ? err.message : 'Unknown error'));
-                    return;
-                }
-            }
             try {
                 const res = await fetch('/api/registrations/' + encodeURIComponent(utr), {
                     method: 'PUT',
@@ -547,62 +528,17 @@ app.put('/api/registrations/:utr', (req, res) => {
             return res.status(404).json({ success: false, message: 'No registrations found.' });
         }
         let registrations = JSON.parse(fs.readFileSync(jsonPath));
-        let foundIndex = registrations.findIndex(r => String((r && r.utr) || '').trim() === utr);
-        if (foundIndex === -1) {
+        let found = false;
+        registrations = registrations.map(r => {
+            if (String((r && r.utr) || '').trim() === utr) {
+                found = true;
+                return { ...r, ...updates };
+            }
+            return r;
+        });
+        if (!found) {
             return res.status(404).json({ success: false, message: 'Registration not found for this UTR.' });
         }
-        const merged = { ...registrations[foundIndex], ...updates };
-        const isEmpty = (
-            (!merged.name || String(merged.name).trim() === '') &&
-            (!merged.regno || String(merged.regno).trim() === '') &&
-            (!merged.course || String(merged.course).trim() === '') &&
-            (!merged.branch || String(merged.branch).trim() === '') &&
-            (!merged.section || String(merged.section).trim() === '') &&
-            (!merged.year || String(merged.year).trim() === '') &&
-            (!merged.campus || String(merged.campus).trim() === '') &&
-            (!merged.email || String(merged.email).trim() === '') &&
-            (!merged.events || (Array.isArray(merged.events) ? merged.events.length === 0 : String(merged.events).trim() === '')) &&
-            (!merged.amount || Number(merged.amount) === 0)
-        );
-
-        if (isEmpty) {
-            // Treat as delete
-            const toDelete = registrations[foundIndex];
-            registrations = registrations.filter((_, idx) => idx !== foundIndex);
-            fs.writeFileSync(jsonPath, JSON.stringify(registrations, null, 2));
-
-            // Delete QR if present
-            try {
-                const qrFile = toDelete && toDelete.qrFile ? toDelete.qrFile.replace(/^\//, '') : null;
-                if (qrFile) {
-                    const abs = path.join(__dirname, qrFile);
-                    if (fs.existsSync(abs)) { try { fs.unlinkSync(abs); } catch (_) {} }
-                }
-            } catch (_) {}
-
-            // Update Excel by removing the row
-            try {
-                const excelPath = path.join(__dirname, 'shrestmahotsav-2k25.xls');
-                if (fs.existsSync(excelPath)) {
-                    const wb = XLSX.readFile(excelPath);
-                    const sheetName = wb.SheetNames[0];
-                    const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName]);
-                    const norm = v => String(v == null ? '' : v).replace(/\D/g, '').trim();
-                    const filt = rows.filter(row => norm((row && row.UTR) || '') !== utr);
-                    const ws = XLSX.utils.json_to_sheet(filt);
-                    const nwb = XLSX.utils.book_new();
-                    XLSX.utils.book_append_sheet(nwb, ws, 'Registrations');
-                    XLSX.writeFile(nwb, excelPath);
-                }
-            } catch (e) {
-                if (DEBUG) console.error('Error updating Excel on empty-update delete:', e);
-            }
-
-            return res.json({ success: true, deleted: true });
-        }
-
-        // Normal update path
-        registrations[foundIndex] = merged;
         fs.writeFileSync(jsonPath, JSON.stringify(registrations, null, 2));
 
         // Update Excel

@@ -623,15 +623,10 @@
 								const savedYear = localStorage.getItem('shrest.year');
 								const courseEl = document.getElementById('course');
 								const yearEl = document.getElementById('year');
-								const campusEl = document.getElementById('campus');
 								if (savedCourse && courseEl) {
 									courseEl.value = savedCourse;
 									courseEl.dispatchEvent(new Event('change'));
 									courseEl.disabled = true; // lock from edits
-									if (savedCourse === 'B.Tech' && campusEl) {
-										campusEl.value = 'RUSHIKONDA';
-										campusEl.disabled = true;
-									}
 								}
 								if (savedYear && yearEl) {
 									yearEl.value = savedYear;
@@ -678,7 +673,6 @@
 		(function() {
 			const courseEl = document.getElementById('course');
 			const yearEl = document.getElementById('year');
-			const campusEl = document.getElementById('campus');
 			const branchOtherGroup = document.getElementById('branch-group');
 			const branchBtechGroup = document.getElementById('branch-btech-group');
 			const branchBtechEl = document.getElementById('branch-btech');
@@ -731,20 +725,6 @@
 				branchBtechEl.value = '';
 				degreeTypeEl.value = '';
 				degreeOtherEl.value = '';
-				// Lock campus to RUSHIKONDA for B.Tech, else enable selection
-				if (course === 'B.Tech') {
-					if (campusEl) {
-						campusEl.value = 'RUSHIKONDA';
-						campusEl.disabled = true;
-					}
-				} else {
-					if (campusEl) {
-						campusEl.disabled = false;
-						if (campusEl.value === 'RUSHIKONDA') {
-							campusEl.value = '';
-						}
-					}
-				}
 				if (course === 'B.Tech') {
 					branchBtechGroup.style.display = 'block';
 					populateYears(4);
@@ -766,20 +746,6 @@
 				} else {
 					degreeOtherGroup.style.display = 'none';
 					degreeOtherEl.value = '';
-				}
-				// Lock campus for BCA/BBA selections; otherwise enable campus selection
-				if (this.value === 'BCA' || this.value === 'BBA') {
-					if (campusEl) {
-						campusEl.value = 'RUSHIKONDA';
-						campusEl.disabled = true;
-					}
-				} else {
-					if (campusEl) {
-						campusEl.disabled = false;
-						if (campusEl.value === 'RUSHIKONDA') {
-							campusEl.value = '';
-						}
-					}
 				}
 			});
 
@@ -1009,7 +975,14 @@
 			}, 800);
 		};
 
-
+		// Proceed button handler
+		document.getElementById('proceed-next').onclick = function() {
+			// Hide top fee panel after validation and proceed
+			const feePanel = document.getElementById('feePanel');
+			if (feePanel) feePanel.style.display = 'none';
+			document.getElementById('utr-section').classList.add('hidden');
+			document.getElementById('registration-form').classList.remove('hidden');
+		};
 	</script>
 
 	<style>
