@@ -1,0 +1,9 @@
+{
+	"name": "shrest-mahotsav-static",
+	"version": "1.0.0",
+	"private": true,
+	"description": "Static frontend for SHREST MAHOTSAV",
+	"scripts": {
+		"build": "echo Static site - no build step"
+	}
+}
