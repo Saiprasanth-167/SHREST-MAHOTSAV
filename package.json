@@ -1,12 +1,14 @@
 {
   "name": "shrest-mahotsav",
   "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
+  "description": "SHREST MAHOTSAV 2K25 - Event Registration Platform",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node index.js",
+    "dev": "node index.js",
+    "build": "echo 'No build step required'"
   },
-  "keywords": [],
+  "keywords": ["event", "registration", "mahotsav"],
   "author": "",
   "license": "ISC",
   "dependencies": {
