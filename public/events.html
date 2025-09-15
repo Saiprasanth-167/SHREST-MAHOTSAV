@@ -206,7 +206,7 @@
             const regData = localStorage.getItem('shrest_registration');
             if (!regData) {
                 alert('Please complete registration first.');
-                window.location.href = 'shrestregistration.html';
+                window.location.href = '/shrestregistration';
             }
         };
 
@@ -285,7 +285,7 @@
                     // Navigate to larger celebration view with QR
                     const savedQR = (function(){ try { return localStorage.getItem('shrest.qrUrl') || ''; } catch(_) { return ''; } })();
                     if (savedQR) {
-                        window.location.href = 'celebration.html?qr=' + encodeURIComponent(savedQR);
+                        window.location.href = '/celebration?qr=' + encodeURIComponent(savedQR);
                     }
                 } else {
                     throw new Error(data.message || 'Submission failed.');
