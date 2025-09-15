@@ -745,57 +745,13 @@
 		// Disabled: OTP verification is no longer required
 
 		// Form submission
-		document.getElementById('registration-form').onsubmit = async function(e) {
+		document.getElementById('registration-form').onsubmit = function(e) {
 			e.preventDefault();
 			const submitBtn = document.getElementById('submit-btn');
 			submitBtn.disabled = true;
-			submitBtn.textContent = 'Validating...';
-			const formErrorDiv = document.getElementById('form-submit-error');
-			formErrorDiv.textContent = '';
+			submitBtn.textContent = 'Redirecting...';
 
-			// Final UTR check before submission
-			const utrVal = document.getElementById('utr-hidden').value;
-			if (!utrVal) {
-				formErrorDiv.textContent = 'UTR not found. Please complete the UTR validation step first.';
-				submitBtn.disabled = false;
-				submitBtn.textContent = 'Submit';
-				return;
-			}
-
-			try {
-				const resp = await fetch('/api/validate-utr', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ utr: utrVal })
-				});
-				const data = await resp.json();
-				if (data.duplicate) {
-					formErrorDiv.textContent = 'This UTR number has already been used. Please go back and use a different one.';
-					submitBtn.disabled = false;
-					submitBtn.textContent = 'Submit';
-					return;
-				}
-			} catch (err) {
-				formErrorDiv.textContent = 'A network error occurred. Please try again.';
-				submitBtn.disabled = false;
-				submitBtn.textContent = 'Submit';
-				return;
-			}
-
-			// Validate registration number: numbers only, minimum 5 digits
-			const regnoInput = document.getElementById('regno');
-			const regnoErr = document.getElementById('regno-error');
-			regnoErr.textContent = '';
-			const regnoValCheck = (regnoInput.value || '').trim();
-			if (!/^\d{5,}$/.test(regnoValCheck)) {
-				regnoErr.textContent = 'Please enter at least 5 digits (numbers only).';
-				regnoInput.focus();
-				submitBtn.disabled = false;
-				submitBtn.textContent = 'Submit';
-				return;
-			}
-
-			// Gather registration data after validation passes
+			// Gather registration data
 			const selectedCourse = document.getElementById('course').value;
 			const regData = {
 				name: document.getElementById('name').value.trim(),
@@ -817,7 +773,7 @@
 				})(),
 				section: (function(){
 					const s = document.getElementById('section');
-					const hasOptions = s && s.options && s.options.length > 1; // >1 means real section options exist
+					const hasOptions = s && s.options && s.options.length > 1;
 					if (selectedCourse === 'B.Tech') {
 						return hasOptions ? (s.value || '') : '-';
 					}
@@ -828,12 +784,12 @@
 				utr: document.getElementById('utr-hidden').value,
 				screenshot: document.getElementById('screenshot-hidden').value
 			};
+			
 			// Store in localStorage and go to events
 			localStorage.setItem('shrest_registration', JSON.stringify(regData));
-			submitBtn.textContent = 'Redirecting...';
-			setTimeout(() => {
-				window.location.href = 'events.html';
-			}, 800);
+			
+			// Redirect immediately
+			window.location.href = 'events.html';
 		};
 
 		// Proceed button handler
