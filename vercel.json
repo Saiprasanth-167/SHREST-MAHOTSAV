@@ -1,0 +1,13 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/home.html" },
+    { "source": "/shrestregistration", "destination": "/public/shrestregistration.html" },
+    { "source": "/events", "destination": "/public/events.html" },
+    { "source": "/qrscanner", "destination": "/public/qrscanner.html" },
+    { "source": "/celebration", "destination": "/public/celebration.html" },
+    { "source": "/qrcodes/:path*", "destination": "/api/qrcodes/:path*" },
+    { "source": "/live-excel", "destination": "/api/live-excel" },
+    { "source": "/download-excel", "destination": "/api/download-excel" },
+    { "source": "/api/:path*", "destination": "/api/:path*" }
+  ]
+}
