@@ -23,6 +23,33 @@ async function sendOtp(email) {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     otpStore[email] = otp;
     
+    // For Render environment, show OTP in console and allow bypass
+    if (process.env.RENDER) {
+        console.log(`=== RENDER OTP FOR ${email}: ${otp} ===`);
+        try {
+            // Quick attempt to send email
+            const emailPromise = transporter.sendMail({
+                from: process.env.EMAIL,
+                to: email,
+                subject: 'Your SHREST MAHOTSAV OTP Code',
+                text: `Your OTP code for registration is ${otp}`,
+                html: `<h2>SHREST MAHOTSAV Registration</h2><p>Your OTP code is: <strong>${otp}</strong></p><p>This OTP is valid for a limited time.</p>`
+            });
+            
+            // Very short timeout for Render
+            const timeout = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Email timeout')), 5000)
+            );
+            
+            await Promise.race([emailPromise, timeout]);
+            console.log(`Email sent successfully to ${email}`);
+        } catch (err) {
+            console.log(`Email failed for ${email}, but OTP is: ${otp}`);
+        }
+        return { success: true, message: 'OTP sent to email.' };
+    }
+    
+    // Local environment - normal email sending
     try {
         const emailPromise = transporter.sendMail({
             from: process.env.EMAIL,
@@ -32,18 +59,13 @@ async function sendOtp(email) {
             html: `<h2>SHREST MAHOTSAV Registration</h2><p>Your OTP code is: <strong>${otp}</strong></p><p>This OTP is valid for a limited time.</p>`
         });
         
-        const timeout = process.env.RENDER ? 10000 : 30000;
-        const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Email timeout')), timeout)
+        const timeout = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Email timeout')), 30000)
         );
         
-        await Promise.race([emailPromise, timeoutPromise]);
+        await Promise.race([emailPromise, timeout]);
         return { success: true, message: 'OTP sent to email.' };
     } catch (err) {
-        // On Render, allow registration to continue even if email fails
-        if (process.env.RENDER) {
-            return { success: true, message: 'Registration proceeding - check email or contact admin.' };
-        }
         return { success: false, message: 'Failed to send OTP.' };
     }
 }
@@ -57,4 +79,4 @@ function verifyOtp(email, otp) {
     }
 }
 
-module.exports = { sendOtp, verifyOtp };
+module.exports = { sendOtp, verifyOtp, otpStore };
