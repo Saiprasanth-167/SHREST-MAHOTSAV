@@ -1,0 +1,1023 @@
+	<!-- Tesseract.js for OCR -->
+	<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.1/dist/tesseract.min.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SHREST MAHOTSAV Registration FORM</title>
+	<style>
+		body {
+			font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+			background: linear-gradient(120deg, #9236e8 0%, #c2e9fb 100%);
+			margin: 0;
+			padding: 0;
+			min-height: 100vh;
+		}
+		.container {
+			max-width: 480px;
+			margin: 48px auto;
+			background: rgba(255,255,255,0.97);
+			padding: 36px 38px 30px 38px;
+			border-radius: 18px;
+			box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+			position: relative;
+			overflow: hidden;
+		}
+		h2 {
+			text-align: center;
+			color: whitesmoke;
+			font-size: 2.1rem;
+			margin-bottom: 28px;
+			letter-spacing: 1px;
+		}
+		.form-group {
+			margin-bottom: 22px;
+		}
+		label {
+			display: block;
+			margin-bottom: 7px;
+			font-weight: 600;
+			color: #1a2980;
+			letter-spacing: 0.5px;
+		}
+		input, select {
+			width: 100%;
+			padding: 10px 12px;
+			border: 1.5px solid #b2bec3;
+			border-radius: 6px;
+			font-size: 1rem;
+			background: #f8fafc;
+			transition: border 0.2s;
+			margin-top: 2px;
+		}
+		input:focus, select:focus {
+			border: 1.5px solid #2980b9;
+			outline: none;
+			background: #eaf6fb;
+		}
+		.hidden {
+			display: none;
+		}
+		.error {
+			color: #e74c3c;
+			margin-bottom: 10px;
+			font-size: 0.98rem;
+			font-weight: 500;
+		}
+		.success {
+			color: #27ae60;
+			margin-bottom: 10px;
+			font-size: 0.98rem;
+			font-weight: 500;
+		}
+		button {
+			background: linear-gradient(90deg, #1a2980 0%, #26d0ce 100%);
+			color: #fff;
+			border: none;
+			padding: 11px 0;
+			border-radius: 6px;
+			cursor: pointer;
+			font-size: 1.08rem;
+			font-weight: 600;
+			width: 100%;
+			margin-top: 6px;
+			box-shadow: 0 2px 8px #0001;
+			transition: background 0.2s, box-shadow 0.2s;
+		}
+		button:disabled {
+			background: #b2bec3;
+			color: #fff;
+			cursor: not-allowed;
+		}
+		#utr-section, #registration-form {
+			animation: fadeIn 0.7s;
+		}
+		@keyframes fadeIn {
+			from { opacity: 0; transform: translateY(30px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+		/* Custom file input */
+		input[type="file"]::-webkit-file-upload-button {
+			visibility: hidden;
+		}
+		input[type="file"]::before {
+			content: 'Choose Screenshot';
+			display: inline-block;
+			background: #26d0ce;
+			color: #fff;
+			border: none;
+			border-radius: 6px;
+			padding: 8px 16px;
+			outline: none;
+			white-space: nowrap;
+			-webkit-user-select: none;
+			user-select: none;
+			cursor: pointer;
+			font-size: 1rem;
+			font-weight: 500;
+			margin-right: 10px;
+		}
+		input[type="file"]:focus::before {
+			outline: 2px solid #2980b9;
+		}
+		/* Responsive */
+		@media (max-width: 600px) {
+			.container {
+				padding: 18px 6vw 18px 6vw;
+			}
+			h2 {
+				font-size: 1.4rem;
+			}
+		}
+
+		/* Fee side widget (mirrors home.html) */
+		.fee-side { width: 92%; max-width: 520px; background:#fff; border-radius:16px; padding:22px; box-shadow:0 10px 30px rgba(0,0,0,0.08); text-align:left; margin: 28px auto; }
+		.fee-side h3 { margin:0 0 10px; color:#1a2980; font-size:1.1rem; }
+		.fee-side label { display:block; margin-top:8px; margin-bottom:6px; color:#34495e; font-weight:600; }
+		.fee-side select { width:100%; padding:10px; border:1.5px solid #b2bec3; border-radius:8px; font-size:1rem; background:#fff; }
+		.fee-side input[type="text"] { width:100%; padding:10px; border:1.5px solid #b2bec3; border-radius:8px; font-size:1rem; background:#fff; }
+		.fee-note { margin-top:8px; color:#7f8c8d; font-size:.9rem; }
+		.fee { margin-top:12px; font-weight:700; color:#1a2980; font-size:1.05rem; }
+		.fee-qr-block { margin-top:14px; padding:12px; border:1px solid #e6ecf2; border-radius:10px; background:#fafcff; }
+		.fee-qr-title { font-weight:700; color:#34495e; margin-bottom:8px; }
+		.fee-qr-img { width:100%; max-width:300px; display:block; margin:6px auto; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+		.fee-amount { margin-top:8px; font-weight:700; color:#1a2980; text-align:center; }
+		.fee-qr-actions { display:flex; gap:10px; justify-content:center; margin-top:8px; flex-wrap:wrap; }
+		.fee-qr-actions a, .fee-qr-actions button { padding:8px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:600; color:#fff; text-decoration:none; background:linear-gradient(90deg,#1a2980 0%, #26d0ce 100%); }
+		/* Top title container */
+		.title-side { width: 100%; max-width: 600px;background: linear-gradient(120deg, #9236e8 50%, #66bbe3 50%); border-radius:14px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.08); text-align:center; margin: 28px auto 0; 
+		}
+	</style>
+</head>
+<body>
+	<!-- Title above the fee panel -->
+	<div class="title-side" id="titlePanel">
+		<h2>SHREST MAHOTSAV 2K25 Registration FORM</h2>
+	</div>
+	<!-- Entry Fee by Year (shown on registration page) -->
+	<div class="fee-side" id="feePanel">
+		<h3>Entry Fee by Year</h3>
+		<div class="mini-alert" role="alert">USE PHONEPAY ONLY TO PAY THE AMOUNT</div>
+		<label for="feeCourseSelect">Course</label>
+		<select id="feeCourseSelect">
+			<option value="select">Select your course</option>
+			<option value="B.Tech">B.Tech</option>
+			<option value="DEGREE">DEGREE</option>
+			<option value="Other">Other</option>
+		</select>
+		<div id="feeOtherCourseGroup" style="display:none; margin-top:6px;">
+			<label for="feeCourseOther">Enter Course Name</label>
+			<input id="feeCourseOther" type="text" placeholder="ENTER YOUR COURSE NAME" />
+		</div>
+		<div id="feeYearBlock" style="display:none;">
+			<label for="feeYearSelect">Select Year</label>
+			<select id="feeYearSelect">
+				<option value="">Select your year</option>
+				<option value="1">1st Year</option>
+				<option value="2">2nd Year</option>
+				<option value="3">3rd Year</option>
+				<option value="4">4th Year</option>
+			</select>
+			<div class="fee" id="feeDisplayReg">Fee: -</div>
+			<div class="fee-note">Note: 4th year fee (Rs 400) applies to B.Tech students only.</div>
+			<div class="fee-qr-block">
+				<div class="fee-qr-title">UPI Payment</div>
+				<canvas id="upiQrCanvas" class="fee-qr-img"></canvas>
+				<div class="fee-amount" id="feePhonepeAmount">Select course to see amount</div>
+				<div class="fee-note" id="feeUpiNote" style="text-align:center;">Scan this QR in phonepe only ; amount auto-fills.</div>
+				<div class="fee-note" id="feeUpiWarn" style="text-align:center;color:#b23c17;display:none;"></div>
+				<div class="success" id="feePaymentSuccess" style="display:none; text-align:center; margin-top:8px;">Transaction is successful, proceed to next step.</div>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<!-- Mini contact container (below the card) -->
+		<div id="miniContact"></div>
+		<div id="utr-section">
+			<div class="form-group">
+				<label for="utr">PhonePe UTR Number (12 digits)</label>
+				<input type="text" id="utr" maxlength="12" pattern="\d{12}" required>
+			</div>
+			<div class="form-group">
+				<label for="screenshot">Upload Payment Screenshot</label>
+				<input type="file" id="screenshot" accept="image/*" required>
+			</div>
+			<div class="error" id="utr-error"></div>
+			<button id="utr-validate">Validate UTR</button>
+			<div id="utr-emoji" style="display:none; font-size:42px; text-align:center; margin-top:8px;">😠</div>
+			<div class="success" id="utr-loading" style="display:none; text-align:center;">Processing, please wait...</div>
+			<!-- success line and proceed button removed as per request -->
+		</div>
+
+		<form id="registration-form" class="hidden" enctype="multipart/form-data">
+			<div class="form-group">
+				<label for="name">Name</label>
+				<input type="text" id="name" name="name" required>
+			</div>
+			<div class="form-group">
+				<label for="regno">Registration Number</label>
+				<input type="text" id="regno" name="regno" required pattern="^\d{5,}$" inputmode="numeric" placeholder="Enter registration number (min 5 digits)" title="Enter at least 5 digits (numbers only)">
+				<div class="error" id="regno-error"></div>
+			</div>
+			<div class="form-group">
+				<label for="course">Course</label>
+				<select id="course" name="course" required>
+					<option value="">Select Course</option>
+					<option value="B.Tech">B.Tech</option>
+					<option value="DEGREE">DEGREE</option>
+					<option value="Other">Other</option>
+				</select>
+			</div>
+			<div class="form-group" id="branch-btech-group" style="display:none;">
+				<label for="branch-btech">Choose Branch</label>
+				<select id="branch-btech" name="branch-btech">
+					<option value="">Select Branch</option>
+					<option value="CSE">CSE</option>
+					<option value="CSE(AI&ML)">CSE(AI&ML)</option>
+					<option value="CIVIL">CIVIL</option>
+					<option value="MECHANICAL">MECHANICAL</option>
+				</select>
+			</div>
+			<div class="form-group" id="degree-type-group" style="display:none;">
+				<label for="degree-type">Degree Type</label>
+				<select id="degree-type" name="degree-type">
+					<option value="">Select Degree Type</option>
+					<option value="BCA">BCA</option>
+					<option value="BSC (all groups)">BSC (all groups)</option>
+					<option value="BBA">BBA</option>
+					<option value="OTHERS">OTHERS</option>
+				</select>
+			</div>
+			<div class="form-group" id="degree-other-group" style="display:none;">
+				<label for="degree-other">Enter Group (for OTHERS)</label>
+				<input type="text" id="degree-other" name="degree-other" placeholder="Enter your group">
+			</div>
+			<div class="form-group" id="branch-group" style="display:none;">
+				<label for="branch">Branch (for Other only)</label>
+				<input type="text" id="branch" name="branch">
+			</div>
+			<div class="form-group">
+				<label for="year">Year</label>
+				<select id="year" name="year" required>
+					<option value="">Select Year</option>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+				</select>
+			</div>
+			<div class="form-group" id="section-group" style="display:none;">
+				<label for="section">Section</label>
+				<select id="section" name="section">
+					<option value="">Select Section</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="campus">Campus</label>
+				<select id="campus" name="campus" required>
+					<option value="">Select Campus</option>
+					<option value="RUSHIKONDA">RUSHIKONDA</option>
+					<option value="MVP">MVP</option>
+					<option value="DWARAKANAGAR">DWARAKANAGAR</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="email">Email</label>
+				<input type="email" id="email" name="email" required>
+				<button type="button" id="send-otp" style="margin-top:8px;">Send OTP</button>
+				<button type="button" id="resend-otp" style="margin-top:8px; margin-left:8px; display:none;">Resend OTP</button>
+				<div class="form-group hidden" id="otp-group">
+					<label for="otp">Enter OTP</label>
+					<input type="text" id="otp" name="otp" maxlength="6">
+					<button type="button" id="verify-otp" style="margin-top:8px; display:none;">Verify OTP</button>
+				</div>
+				<div class="error" id="email-error"></div>
+				<div class="success" id="email-success"></div>
+			</div>
+			<input type="hidden" id="utr-hidden" name="utr">
+			<input type="hidden" id="screenshot-hidden" name="screenshot">
+			<button type="submit" id="submit-btn" disabled>Submit</button>
+		</form>
+	</div>
+
+	<!-- Footer mini contact button (tap-to-call) -->
+	<a class="mini-contact-btn" id="miniContactFooter" href="tel:+918374466616">Contact for payment issues</a>
+
+	<script>
+		// Fee display logic for registration page (kept independent from form controls)
+		(function(){
+			const courseFees = {
+				'B.Tech': { '1': 100, '2': 200, '3': 300, '4': 400 },
+				'DEGREE': { '1': 100, '2': 200, '3': 300 },
+				'Other':  { '1': 100, '2': 200, '3': 300 }
+			};
+			let upiConfig = { pa: '', pn: 'SHREST MAHOTSAV' };
+			const courseSel = document.getElementById('feeCourseSelect');
+			const otherCourseGroup = document.getElementById('feeOtherCourseGroup');
+			const courseOther = document.getElementById('feeCourseOther');
+			const yearSel = document.getElementById('feeYearSelect');
+			const yearBlock = document.getElementById('feeYearBlock');
+			const feeEl = document.getElementById('feeDisplayReg');
+			const phonepeAmount = document.getElementById('feePhonepeAmount');
+			const upiCanvas = document.getElementById('upiQrCanvas');
+			const upiWarn = document.getElementById('feeUpiWarn');
+
+			async function fetchUpiConfig() {
+				try {
+					if (location.protocol === 'file:') {
+						upiWarn.style.display = 'block';
+						upiWarn.textContent = 'Open this page via http://localhost:8000 for QR to work.';
+						return;
+					}
+					const resp = await fetch('/api/upi-config');
+					const data = await resp.json();
+					upiConfig = { pa: data.pa || '', pn: data.pn || 'SHREST MAHOTSAV' };
+					updateFee();
+				} catch (e) {
+					upiWarn.style.display = 'block';
+					upiWarn.textContent = 'Could not load UPI details. Ensure server is running.';
+				}
+			}
+
+			function buildUpiUrl({ pa, pn, am, tn, tr }) {
+				const params = new URLSearchParams();
+				params.set('pa', pa);
+				if (pn) params.set('pn', pn);
+				if (am) params.set('am', String(am));
+				params.set('cu', 'INR');
+				if (tn) params.set('tn', tn);
+				if (tr) params.set('tr', tr);
+				return 'upi://pay?' + params.toString();
+			}
+
+			function genTxnRef() {
+				const rnd = Math.floor(Math.random()*1e6).toString().padStart(6,'0');
+				return 'SHREST' + Date.now() + rnd;
+			}
+
+			async function renderUpi(fee) {
+				const course = courseSel.value;
+				const yr = yearSel.value;
+				const tn = `SHREST fee ${course} Y${yr}`;
+				if (upiConfig.pa && fee > 0) {
+					try {
+						upiWarn.style.display = 'none';
+						const tr = genTxnRef();
+						const qUrl = `/api/upi-qr?am=${encodeURIComponent(fee)}&tn=${encodeURIComponent(tn)}&tr=${encodeURIComponent(tr)}`;
+						const img = new Image();
+						img.onload = () => {
+							const ctx = upiCanvas.getContext('2d');
+							upiCanvas.width = Math.min(300, img.width);
+							upiCanvas.height = upiCanvas.width;
+							ctx.clearRect(0,0,upiCanvas.width, upiCanvas.height);
+							ctx.drawImage(img, 0, 0, upiCanvas.width, upiCanvas.height);
+						};
+						img.onerror = () => {
+							upiWarn.style.display = 'block';
+							upiWarn.textContent = 'Failed to load QR image. Ensure server is running.';
+						};
+						img.src = qUrl;
+					} catch (e) {
+						upiWarn.style.display = 'block';
+						upiWarn.textContent = 'Failed to render QR.';
+					}
+				} else {
+					if (upiCanvas) { const ctx = upiCanvas.getContext('2d'); ctx && ctx.clearRect(0,0,upiCanvas.width, upiCanvas.height); }
+				}
+			}
+			// Gate: prevent UTR section usage until Course and Year selected
+			const utrInput = document.getElementById('utr');
+			const screenshotInput = document.getElementById('screenshot');
+			const utrBtn = document.getElementById('utr-validate');
+			const applyGate = () => {
+				const hasCourse = courseSel.value && courseSel.value !== 'select';
+				const hasYear = !!yearSel.value;
+				const enabled = hasCourse && hasYear;
+				[utrInput, screenshotInput, utrBtn].forEach(el => { if (el) el.disabled = !enabled; });
+			};
+
+			const setYearOptions = (maxYear) => {
+				const current = yearSel.value;
+				const opts = [
+					'<option value="">Select your year</option>',
+					'<option value="1">1st Year</option>',
+					'<option value="2">2nd Year</option>',
+					'<option value="3">3rd Year</option>'
+				];
+				if (maxYear >= 4) opts.push('<option value="4">4th Year</option>');
+				yearSel.innerHTML = opts.join('');
+				if (current && Number(current) <= maxYear) {
+					yearSel.value = current;
+				} else {
+					yearSel.value = '';
+				}
+				applyGate();
+			};
+
+			const updateCourseUI = () => {
+				const isBTech = courseSel.value === 'B.Tech';
+				otherCourseGroup.style.display = courseSel.value === 'Other' ? 'block' : 'none';
+				const hasCourse = courseSel.value && courseSel.value !== 'select';
+				yearBlock.style.display = hasCourse ? 'block' : 'none';
+				setYearOptions(isBTech ? 4 : 3);
+				if (!isBTech && yearSel.value === '4') yearSel.value = '';
+				applyGate();
+			};
+
+			try {
+				courseSel.value = 'select';
+				courseOther.value = '';
+				setYearOptions(3);
+				yearSel.value = '';
+				yearBlock.style.display = 'none';
+				otherCourseGroup.style.display = 'none';
+				feeEl.textContent = 'Fee: -';
+				if (phonepeAmount) phonepeAmount.textContent = 'Select course to see amount';
+				updateCourseUI();
+				applyGate();
+			} catch (_) {}
+
+			const updateFee = () => {
+				const course = courseSel.value;
+				const yr = yearSel.value;
+				const table = courseFees[course] || {};
+				const fee = yr ? (table[yr] || 0) : 0;
+				if (course && course !== 'select' && yr && fee > 0) {
+					feeEl.textContent = `Fee: Rs ${fee}`;
+					if (phonepeAmount) phonepeAmount.textContent = upiConfig.pa ? `Pay Rs ${fee} to this account` : `UPI account not configured`;
+					renderUpi(fee);
+				} else {
+					feeEl.textContent = 'Fee: -';
+					if (phonepeAmount) phonepeAmount.textContent = (course && course !== 'select') ? 'Select year to see amount' : 'Select course to see amount';
+					renderUpi(0);
+				}
+				try {
+					if (course && course !== 'select') {
+						localStorage.setItem('shrest.course', String(course));
+					}
+					if (courseSel.value === 'Other') {
+						localStorage.setItem('shrest.courseName', String((courseOther.value || '').trim()));
+					} else {
+						localStorage.removeItem('shrest.courseName');
+					}
+					if (yr) {
+						localStorage.setItem('shrest.year', String(yr));
+					} else {
+						localStorage.removeItem('shrest.year');
+					}
+					localStorage.setItem('shrest.fee', String(fee));
+				} catch (_) {}
+				applyGate();
+			};
+
+			const onCourseChange = () => { updateCourseUI(); yearSel.value=''; updateFee(); };
+			courseSel.addEventListener('change', onCourseChange);
+			courseOther.addEventListener('input', updateFee);
+			yearSel.addEventListener('change', updateFee);
+			fetchUpiConfig();
+			updateFee();
+		})();
+		// Live UTR input validation and duplicate check
+		(function() {
+			const utrInput = document.getElementById('utr');
+			const utrBtn = document.getElementById('utr-validate');
+			const utrError = document.getElementById('utr-error');
+			const utrEmoji = document.getElementById('utr-emoji');
+			let timer;
+			utrInput.addEventListener('input', () => {
+				utrEmoji.style.display = 'none';
+				utrError.textContent = '';
+				utrBtn.disabled = false;
+				const v = utrInput.value.trim();
+				if (v.length === 12 && /^\d{12}$/.test(v)) {
+					clearTimeout(timer);
+					timer = setTimeout(async () => {
+						try {
+							const resp = await fetch('/api/validate-utr', {
+								method: 'POST',
+								headers: { 'Content-Type': 'application/json' },
+								body: JSON.stringify({ utr: v })
+							});
+							const data = await resp.json();
+							if (!data.valid) {
+								utrError.textContent = data.message || 'Invalid UTR number.';
+								utrBtn.disabled = true;
+								return;
+							}
+							if (data.duplicate) {
+								utrError.textContent = 'This UTR has already been used.';
+								utrEmoji.style.display = 'block';
+								utrBtn.disabled = true;
+							}
+						} catch (_) {
+							// ignore network errors here; blocking on click flow will handle
+						}
+					}, 300);
+				} else if (v.length > 0) {
+					utrError.textContent = 'UTR must be 12 digits.';
+					utrBtn.disabled = true;
+				} else {
+					utrError.textContent = '';
+					utrBtn.disabled = false;
+				}
+			});
+		})();
+
+		// UTR validation
+		document.getElementById('utr-validate').onclick = function() {
+			const utr = document.getElementById('utr').value.trim();
+			const screenshot = document.getElementById('screenshot').files[0];
+			const errorDiv = document.getElementById('utr-error');
+			const loadingDiv = document.getElementById('utr-loading');
+			const emojiDiv = document.getElementById('utr-emoji');
+			// expected fee from earlier panel (stored by fee widget)
+			const expectedFee = Number(localStorage.getItem('shrest.fee') || 0);
+			// success/proceed elements removed per request
+			errorDiv.textContent = '';
+			loadingDiv.style.display = 'none';
+			emojiDiv.style.display = 'none';
+			// removed success visibility controls
+			if (!/^\d{12}$/.test(utr)) {
+				errorDiv.textContent = 'Enter a valid 12-digit UTR number.';
+				return;
+			}
+			if (!screenshot) {
+				errorDiv.textContent = 'Please upload the payment screenshot.';
+				return;
+			}
+			if (!expectedFee || isNaN(expectedFee)) {
+				errorDiv.textContent = 'Please select your Course and Year above to compute the fee before validating UTR.';
+				return;
+			}
+			loadingDiv.style.display = 'block';
+			document.getElementById('utr-validate').disabled = true;
+			// Use Tesseract.js to extract text from image and check for UTR
+			Tesseract.recognize(
+				screenshot,
+				'eng',
+				{ logger: m => { /* Optionally log progress */ } }
+			).then(async ({ data: { text } }) => {
+				loadingDiv.style.display = 'none';
+				document.getElementById('utr-validate').disabled = false;
+				// Basic text normalization
+				const ocrText = (text || '').replace(/\s+/g,' ').trim();
+				const upper = ocrText.toUpperCase();
+				// Build "receipt-like" checks using common keywords from examples
+				const successKeywords = [
+					/\bPAID\b/, /PAYMENT\s+SUCCESSFUL/, /TRANSACTION\s+SUCCESSFUL/, /SUCCESSFUL\b/, /COMPLETED\b/
+				];
+				const hasSuccess = successKeywords.some(rx => rx.test(upper));
+				const hasUpi = /\bUPI\b|@[A-Z0-9]{2,10}\b/.test(upper);
+				// Accept typical VPA suffixes like @YBL, @OKAXIS, @OKSBI, etc.
+				const vpaLike = /@[A-Z]{2,10}\b/.test(upper);
+				// Receiver name check (must match exactly in text)
+				const expectedReceiver = 'BOOMIREDDY BALA SIDDHARA REDDY';
+				const hasReceiver = upper.includes(expectedReceiver);
+				// Amount checks: ₹100, Rs 100, INR 100, and with decimals like 100.00
+				const amt = String(expectedFee);
+				const amtRxList = [
+					new RegExp('(?:₹|RS\\.?\\s*|INR\\s*)' + amt.replace(/[-/\\^$*+?.()|[\]{}]/g,'\\$&') + '(?:\\.00|\\.0)?\\b','i'),
+					new RegExp('\\b' + amt.replace(/[-/\\^$*+?.()|[\]{}]/g,'\\$&') + '(?:\\.00|\\.0)?\\b','i')
+				];
+				const hasAmount = amtRxList.some(rx => rx.test(ocrText));
+				const hasUtr = ocrText.includes(utr);
+
+				// If receipt-like + amount but receiver name is not expected, reject immediately
+				if ((hasSuccess || hasUpi || vpaLike) && hasAmount && !hasReceiver) {
+					errorDiv.textContent = `Receiver name mismatch. Expected: ${expectedReceiver}.`;
+					return;
+				}
+
+				if (hasAmount && (hasSuccess || hasUpi || vpaLike) && hasReceiver && !hasUtr) {
+					// Screenshot looks like a valid receipt, but UTR in image doesn't match input
+					errorDiv.textContent = 'this is correct screenshot but the utr no. is not matching';
+					return;
+				}
+
+				if (hasUtr && hasAmount && (hasSuccess || hasUpi || vpaLike) && hasReceiver) {
+					// Check duplicate UTR with backend
+					try {
+						const resp = await fetch('/api/validate-utr', {
+							method: 'POST',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({ utr })
+						});
+						const data = await resp.json();
+						if (!data.valid) {
+							errorDiv.textContent = data.message || 'Invalid UTR number.';
+							return;
+						}
+						if (data.duplicate) {
+							errorDiv.textContent = 'This UTR has already been used.';
+							emojiDiv.style.display = 'block';
+							return;
+						}
+						// Show success below QR, then auto-advance shortly
+						errorDiv.textContent = '';
+						document.getElementById('utr-hidden').value = utr;
+						const feeSuccess = document.getElementById('feePaymentSuccess');
+						const prefillCourseYearFromFee = () => {
+							try {
+								const savedCourse = localStorage.getItem('shrest.course');
+								const savedYear = localStorage.getItem('shrest.year');
+								const courseEl = document.getElementById('course');
+								const yearEl = document.getElementById('year');
+								const campusEl = document.getElementById('campus');
+								if (savedCourse && courseEl) {
+									courseEl.value = savedCourse;
+									courseEl.dispatchEvent(new Event('change'));
+									courseEl.disabled = true; // lock from edits
+									if (savedCourse === 'B.Tech' && campusEl) {
+										campusEl.value = 'RUSHIKONDA';
+										campusEl.disabled = true;
+									}
+								}
+								if (savedYear && yearEl) {
+									yearEl.value = savedYear;
+									yearEl.disabled = true; // lock from edits
+								}
+							} catch (_) {}
+						};
+						if (feeSuccess) {
+							feeSuccess.style.display = 'block';
+							setTimeout(() => {
+								const feePanel = document.getElementById('feePanel');
+								if (feePanel) feePanel.style.display = 'none';
+								prefillCourseYearFromFee();
+								document.getElementById('utr-section').classList.add('hidden');
+								document.getElementById('registration-form').classList.remove('hidden');
+							}, 900);
+						} else {
+							const feePanel = document.getElementById('feePanel');
+							if (feePanel) feePanel.style.display = 'none';
+							prefillCourseYearFromFee();
+							document.getElementById('utr-section').classList.add('hidden');
+							document.getElementById('registration-form').classList.remove('hidden');
+						}
+						// Store screenshot in hidden input as base64 (for demo, not secure for real use)
+						const reader = new FileReader();
+						reader.onload = function(e) {
+							document.getElementById('screenshot-hidden').value = e.target.result;
+						};
+						reader.readAsDataURL(screenshot);
+					} catch (dupErr) {
+						errorDiv.textContent = 'Network error validating UTR.';
+					}
+				} else {
+					errorDiv.textContent = `Screenshot does not look like a valid UPI success receipt for Rs ${expectedFee}. Check whether UTR number / amount / banking name are correct in the image.`;
+				}
+			}).catch(() => {
+				loadingDiv.style.display = 'none';
+				document.getElementById('utr-validate').disabled = false;
+				errorDiv.textContent = 'Failed to process the screenshot. Please try a clearer image.';
+			});
+		};
+
+		// Dynamic course/branch/year/section logic
+		(function() {
+			const courseEl = document.getElementById('course');
+			const yearEl = document.getElementById('year');
+			const campusEl = document.getElementById('campus');
+			const branchOtherGroup = document.getElementById('branch-group');
+			const branchBtechGroup = document.getElementById('branch-btech-group');
+			const branchBtechEl = document.getElementById('branch-btech');
+			const degreeTypeGroup = document.getElementById('degree-type-group');
+			const degreeTypeEl = document.getElementById('degree-type');
+			const degreeOtherGroup = document.getElementById('degree-other-group');
+			const degreeOtherEl = document.getElementById('degree-other');
+			const sectionGroup = document.getElementById('section-group');
+			const sectionEl = document.getElementById('section');
+
+			function populateYears(n) {
+				yearEl.innerHTML = '<option value="">Select Year</option>';
+				for (let i = 1; i <= n; i++) {
+					yearEl.innerHTML += `<option value="${i}">${i}</option>`;
+				}
+			}
+
+			function setSections(options) {
+				sectionEl.innerHTML = '<option value="">Select Section</option>' + options.map(o => `<option value="${o}">${o}</option>`).join('');
+				sectionGroup.style.display = options.length ? 'block' : 'none';
+			}
+
+			function updateSections() {
+				const course = courseEl.value;
+				const branch = branchBtechEl.value;
+				const year = yearEl.value;
+				if (course === 'B.Tech') {
+					// Default: no sections
+					let secs = [];
+					if (branch === 'CSE') {
+						if (year === '1') secs = ['A', 'B'];
+						else if (year === '2' || year === '3' || year === '4') secs = ['A', 'B', 'C'];
+					} else if (branch === 'CSE(AI&ML)') {
+						if (year === '1') secs = ['A', 'B'];
+					}
+					setSections(secs);
+				} else {
+					setSections([]);
+				}
+			}
+
+			courseEl.addEventListener('change', function() {
+				const course = this.value;
+				branchOtherGroup.style.display = 'none';
+				branchBtechGroup.style.display = 'none';
+				degreeTypeGroup.style.display = 'none';
+				degreeOtherGroup.style.display = 'none';
+				sectionGroup.style.display = 'none';
+				sectionEl.innerHTML = '<option value="">Select Section</option>';
+				branchBtechEl.value = '';
+				degreeTypeEl.value = '';
+				degreeOtherEl.value = '';
+				// Lock campus to RUSHIKONDA for B.Tech, else enable selection
+				if (course === 'B.Tech') {
+					if (campusEl) {
+						campusEl.value = 'RUSHIKONDA';
+						campusEl.disabled = true;
+					}
+				} else {
+					if (campusEl) {
+						campusEl.disabled = false;
+						if (campusEl.value === 'RUSHIKONDA') {
+							campusEl.value = '';
+						}
+					}
+				}
+				if (course === 'B.Tech') {
+					branchBtechGroup.style.display = 'block';
+					populateYears(4);
+				} else if (course === 'DEGREE') {
+					degreeTypeGroup.style.display = 'block';
+					populateYears(3);
+				} else if (course === 'Other') {
+					branchOtherGroup.style.display = 'block';
+					populateYears(3);
+				} else {
+					yearEl.innerHTML = '<option value="">Select Year</option>';
+				}
+				updateSections();
+			});
+
+			degreeTypeEl.addEventListener('change', function() {
+				if (this.value === 'OTHERS') {
+					degreeOtherGroup.style.display = 'block';
+				} else {
+					degreeOtherGroup.style.display = 'none';
+					degreeOtherEl.value = '';
+				}
+				// Lock campus for BCA/BBA selections; otherwise enable campus selection
+				if (this.value === 'BCA' || this.value === 'BBA') {
+					if (campusEl) {
+						campusEl.value = 'RUSHIKONDA';
+						campusEl.disabled = true;
+					}
+				} else {
+					if (campusEl) {
+						campusEl.disabled = false;
+						if (campusEl.value === 'RUSHIKONDA') {
+							campusEl.value = '';
+						}
+					}
+				}
+			});
+
+			yearEl.addEventListener('change', updateSections);
+			branchBtechEl.addEventListener('change', updateSections);
+		})();
+
+		// Email OTP AJAX using real backend (with robust handling)
+		let isVerifying = false;
+		function enableResend(show) {
+			document.getElementById('resend-otp').style.display = show ? 'inline-block' : 'none';
+		}
+		document.getElementById('send-otp').onclick = async function() {
+			const sendBtn = document.getElementById('send-otp');
+			sendBtn.disabled = true;
+			const email = document.getElementById('email').value.trim();
+			const errorDiv = document.getElementById('email-error');
+			const successDiv = document.getElementById('email-success');
+			errorDiv.textContent = '';
+			successDiv.textContent = '';
+			if (!/^\S+@\S+\.\S+$/.test(email)) {
+				errorDiv.textContent = 'Enter a valid email address.';
+				sendBtn.disabled = false;
+				return;
+			}
+			try {
+				const response = await fetch('/api/send-otp', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ email })
+				});
+				const ct = response.headers.get('content-type') || '';
+				if (!response.ok) {
+					const text = await response.text();
+					errorDiv.textContent = `HTTP ${response.status}: ${text.slice(0, 200)}`;
+					sendBtn.disabled = false;
+					return;
+				}
+				let data;
+				if (ct.includes('application/json')) {
+					data = await response.json();
+				} else {
+					const text = await response.text();
+					errorDiv.textContent = 'Unexpected response from server: ' + text.slice(0, 200);
+					sendBtn.disabled = false;
+					return;
+				}
+				if (data.success) {
+					document.getElementById('otp-group').classList.remove('hidden');
+					successDiv.textContent = 'OTP sent to your email.';
+					enableResend(true);
+				} else {
+					errorDiv.textContent = data.message || 'Failed to send OTP.';
+				}
+			} catch (e) {
+				errorDiv.textContent = 'Failed to send OTP: ' + e.message;
+			} finally {
+				sendBtn.disabled = false;
+			}
+		};
+
+		document.getElementById('resend-otp').onclick = async function() {
+			const resendBtn = document.getElementById('resend-otp');
+			const email = document.getElementById('email').value.trim();
+			const errorDiv = document.getElementById('email-error');
+			const successDiv = document.getElementById('email-success');
+			if (!/^\S+@\S+\.\S+$/.test(email)) {
+				errorDiv.textContent = 'Enter a valid email address.';
+				return;
+			}
+			resendBtn.disabled = true;
+			successDiv.textContent = '';
+			errorDiv.textContent = '';
+			try {
+				const response = await fetch('/api/send-otp', {
+					method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email })
+				});
+				const data = await response.json();
+				if (data.success) {
+					document.getElementById('otp-group').classList.remove('hidden');
+					document.getElementById('email-success').textContent = 'OTP resent.';
+				} else {
+					document.getElementById('email-error').textContent = data.message || 'Failed to resend OTP.';
+				}
+			} catch (e) {
+				document.getElementById('email-error').textContent = 'Failed to resend OTP: ' + e.message;
+			} finally {
+				setTimeout(() => { resendBtn.disabled = false; }, 10000);
+			}
+		};
+
+		async function verifyOtpAuto() {
+			if (isVerifying) return;
+			const email = document.getElementById('email').value.trim();
+			const otp = document.getElementById('otp').value.trim();
+			const errorDiv = document.getElementById('email-error');
+			const successDiv = document.getElementById('email-success');
+			if (!/^\d{6}$/.test(otp)) return;
+			isVerifying = true;
+			errorDiv.textContent = '';
+			successDiv.textContent = '';
+			try {
+				const response = await fetch('/api/verify-otp', {
+					method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, otp })
+				});
+				const ct = response.headers.get('content-type') || '';
+				if (!response.ok) {
+					const text = await response.text();
+					errorDiv.textContent = `HTTP ${response.status}: ${text.slice(0, 200)}`;
+					return;
+				}
+				let data;
+				if (ct.includes('application/json')) {
+					data = await response.json();
+				} else {
+					const text = await response.text();
+					errorDiv.textContent = 'Unexpected response from server: ' + text.slice(0, 200);
+					return;
+				}
+				if (data.success) {
+					successDiv.textContent = 'Email verified!';
+					document.getElementById('submit-btn').disabled = false;
+				} else {
+					errorDiv.textContent = data.message || 'Incorrect OTP. Please try again.';
+					document.getElementById('submit-btn').disabled = false; // keep enabled? safer to keep disabled
+					document.getElementById('submit-btn').disabled = true;
+				}
+			} catch (e) {
+				document.getElementById('email-error').textContent = 'Failed to verify OTP: ' + e.message;
+			} finally {
+				isVerifying = false;
+			}
+		}
+		document.getElementById('otp').addEventListener('input', () => {
+			const otp = document.getElementById('otp').value.trim();
+			if (/^\d{6}$/.test(otp)) {
+				verifyOtpAuto();
+			}
+		});
+
+		// Form submission
+		document.getElementById('registration-form').onsubmit = async function(e) {
+			e.preventDefault();
+			const submitBtn = document.getElementById('submit-btn');
+			submitBtn.disabled = true;
+			submitBtn.textContent = 'Validating...';
+			// Validate registration number: numbers only, minimum 5 digits
+			const regnoInput = document.getElementById('regno');
+			const regnoErr = document.getElementById('regno-error');
+			regnoErr.textContent = '';
+			const regnoValCheck = (regnoInput.value || '').trim();
+			if (!/^\d{5,}$/.test(regnoValCheck)) {
+				regnoErr.textContent = 'Please enter at least 5 digits (numbers only).';
+				regnoInput.focus();
+				submitBtn.disabled = false;
+				submitBtn.textContent = 'Submit';
+				return;
+			}
+			const utrVal = document.getElementById('utr-hidden').value;
+			const utrError = document.getElementById('utr-error');
+			const emojiDiv = document.getElementById('utr-emoji');
+			try {
+				const resp = await fetch('/api/validate-utr', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ utr: utrVal })
+				});
+				const data = await resp.json();
+				if (!data.valid || data.duplicate) {
+					utrError.textContent = data.duplicate ? 'This UTR has already been used.' : (data.message || 'Invalid UTR number.');
+					emojiDiv.style.display = 'block';
+					// Bring user back to UTR section so emoji is visible
+					document.getElementById('registration-form').classList.add('hidden');
+					document.getElementById('utr-section').classList.remove('hidden');
+					submitBtn.disabled = false;
+					submitBtn.textContent = 'Submit';
+					return;
+				}
+			} catch (err) {
+				utrError.textContent = 'Network error validating UTR.';
+				emojiDiv.style.display = 'block';
+				document.getElementById('registration-form').classList.add('hidden');
+				document.getElementById('utr-section').classList.remove('hidden');
+				submitBtn.disabled = false;
+				submitBtn.textContent = 'Submit';
+				return;
+			}
+			// Gather registration data after validation passes
+			const selectedCourse = document.getElementById('course').value;
+			const regData = {
+				name: document.getElementById('name').value.trim(),
+				regno: document.getElementById('regno').value.trim(),
+				course: selectedCourse,
+				branch: (function(){
+					if (selectedCourse === 'B.Tech') return (document.getElementById('branch-btech').value || '');
+					if (selectedCourse === 'Other') return (document.getElementById('branch').value.trim() || '-');
+					if (selectedCourse === 'DEGREE') {
+						const type = (document.getElementById('degree-type').value || '').trim();
+						if (!type) return '-';
+						if (type === 'OTHERS') {
+							const group = (document.getElementById('degree-other').value || '').trim();
+							return group || 'OTHERS';
+						}
+						return type; // BCA, BSC (all groups), BBA
+					}
+					return '';
+				})(),
+				section: (function(){
+					const s = document.getElementById('section');
+					const hasOptions = s && s.options && s.options.length > 1; // >1 means real section options exist
+					if (selectedCourse === 'B.Tech') {
+						return hasOptions ? (s.value || '') : '-';
+					}
+					return '-';
+				})(),
+				year: document.getElementById('year').value,
+				campus: document.getElementById('campus').value,
+				email: document.getElementById('email').value.trim(),
+				utr: utrVal,
+				screenshot: document.getElementById('screenshot-hidden').value
+			};
+			// Store in localStorage and go to events
+			localStorage.setItem('shrest_registration', JSON.stringify(regData));
+			submitBtn.textContent = 'Redirecting...';
+			setTimeout(() => {
+				window.location.href = 'events.html';
+			}, 800);
+		};
+
+
+	</script>
+
+	<style>
+		.mini-contact{max-width:520px;margin:14px auto 28px;background:#ffffffd9;border:1px solid #e6ecf2;border-radius:10px;padding:10px 14px;color:#34495e;font-weight:600;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.06)}
+		.mini-contact-btn{display:block;max-width:520px;margin:14px auto 28px;padding:12px 16px;border-radius:10px;text-align:center;font-weight:700;color:#fff;text-decoration:none;background:linear-gradient(90deg,#1a2980 0%, #26d0ce 100%);box-shadow:0 6px 18px rgba(0,0,0,.12)}
+		.mini-contact-btn:active{transform:translateY(1px)}
+		.mini-alert{max-width:520px;margin:12px auto 10px;padding:12px 16px;background:#fff3cd;color:#7a4100;border:1px solid #ffe69c;border-left:6px solid #ff9800;border-radius:10px;font-weight:800;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.08);animation:pulseWarn 1.4s ease-in-out infinite}
+		@keyframes pulseWarn{0%{box-shadow:0 0 0 0 rgba(255,152,0,.45)}70%{box-shadow:0 0 0 12px rgba(255,152,0,0)}100%{box-shadow:0 0 0 0 rgba(255,152,0,0)}}
+	</style>
+</body>
+</html>

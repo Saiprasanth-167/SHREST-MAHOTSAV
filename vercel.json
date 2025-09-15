@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "name": "shrest-mahotsav",
+  "redirects": [
+    { "source": "/", "destination": "/home.html", "permanent": false }
+  ],
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/proxy/api/$1" },
+    { "source": "/live-excel", "destination": "/api/proxy/live-excel" },
+    { "source": "/download-excel", "destination": "/api/proxy/download-excel" }
+  ]
+}

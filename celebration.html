@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SHREST MAHOTSAV 2K25 — Congratulations</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      background: linear-gradient(135deg, #f78ca0 0%, #f9748f 20%, #fd868c 40%, #a6c0fe 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .wrap {
+      width: 96%;
+      max-width: 760px;
+      text-align: center;
+    }
+    .celebrate {
+      margin: 0 auto 20px auto;
+      padding: 24px 20px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #ff6a88 0%, #ff99ac 40%, #86a8e7 100%);
+      color: #fff;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.18);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    .celebrate .emoji { font-size: 1.6rem; display: block; margin-bottom: 8px; }
+    .celebrate .big { font-size: 2.2rem; font-weight: 900; letter-spacing: .4px; margin: 0 0 6px 0; }
+    .celebrate .sub { font-size: 1.35rem; font-weight: 800; margin: 0; }
+    .celebrate a { color: #ffffff; text-decoration: underline; }
+
+    .panel {
+      background: rgba(255,255,255,0.95);
+      border-radius: 16px;
+      padding: 20px 18px 24px 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    }
+    .panel .title { color: #191654; font-weight: 800; font-size: 1.2rem; margin-bottom: 10px; }
+    #qr-img {
+      width: 100%;
+      max-width: 360px;
+      display: block;
+      margin: 8px auto;
+      border: 1px solid #eee;
+      padding: 10px;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    .actions a {
+      display: inline-block;
+      margin-top: 10px;
+      color: #191654;
+      font-weight: 800;
+      text-decoration: underline;
+      font-size: 1.05rem;
+    }
+    .hint { color: #173b7a; font-weight: 600; margin-top: 8px; }
+
+    @media (max-width: 600px) {
+      .celebrate .big { font-size: 1.8rem; }
+      .celebrate .sub { font-size: 1.15rem; }
+      #qr-img { max-width: 300px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="celebrate">
+      <span class="emoji">🎉</span>
+      <div class="big">Congratulations!</div>
+      <div class="sub">Welcome to <span style="text-decoration:underline;">SHREST MAHOTSAV 2K25</span> 🏆</div>
+    </div>
+    <div class="panel">
+      <div class="title">This QR is Your Id Proof for Entry at Venue</div>
+      <img id="qr-img" alt="QR Code" />
+      <div class="actions">
+        <a id="qr-link" href="#" download>Download QR</a>
+      </div>
+      <div id="qr-hint" class="hint" style="display:none;">No QR found. Open this after submitting events, or pass ?qr=&lt;url&gt;.</div>
+    </div>
+  </div>
+  <script>
+    (function(){
+      function getParam(name){
+        try { return new URLSearchParams(window.location.search).get(name); } catch(_) { return null; }
+      }
+      const img = document.getElementById('qr-img');
+      const link = document.getElementById('qr-link');
+      const hint = document.getElementById('qr-hint');
+      const fromParam = getParam('qr');
+      const fromStorage = localStorage.getItem('shrest.qrUrl');
+      const qrUrl = fromParam || fromStorage || '';
+      if (qrUrl) {
+        img.src = qrUrl;
+        link.href = qrUrl;
+        const filename = qrUrl.split('/').pop() || 'qr.png';
+        link.setAttribute('download', filename);
+      } else {
+        hint.style.display = 'block';
+        img.style.display = 'none';
+        link.style.display = 'none';
+      }
+    })();
+  </script>
+</body>
+</html>

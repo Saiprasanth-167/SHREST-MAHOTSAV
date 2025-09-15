@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Scanner - SHREST</title>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin:0; background:linear-gradient(135deg,#f8ffae 0%,#43c6ac 50%,#191654 100%); min-height:100vh; display:flex; align-items:center; justify-content:center; }
+    .wrap { width:95%; max-width:700px; background:#fff; border-radius:16px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.08); }
+    h2 { margin:8px 0 16px; color:#1a2980; text-align:center; }
+    #reader { width:100%; max-width:560px; margin:0 auto; }
+    .details { margin-top:16px; background:#f9fbff; border:1px solid #eef2f7; border-radius:8px; padding:12px; }
+    .row { margin:6px 0; }
+    .label { font-weight:600; color:#34495e; width:140px; display:inline-block; }
+    .val { color:#2c3e50; }
+    .actions { display:flex; gap:10px; margin-top:12px; flex-wrap: wrap; }
+    button { padding:10px 14px; border:none; border-radius:8px; color:#fff; font-weight:600; cursor:pointer; }
+    .back { background:linear-gradient(90deg,#1a2980 0%,#26d0ce 100%); }
+    .clear { background:linear-gradient(90deg,#f7971e 0%,#ffd200 100%); color:#fff; }
+    .export { display:inline-block; text-decoration:none; padding:10px 14px; border-radius:8px; font-weight:600; color:#fff; background:linear-gradient(90deg,#43c6ac 0%, #1a2980 100%); }
+  </style>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+  <div class="wrap">
+    <h2>Scan Registration QR</h2>
+  <div id="reader"></div>
+  <div style="margin-top:8px;text-align:center;color:#34495e;font-weight:600;">Tip: Hold steady — the scanner detects the QR anywhere in view.</div>
+    
+    <div class="details" id="details" style="display:none;">
+      <div class="row"><span class="label">Name:</span> <span class="val" id="d_name"></span></div>
+      <div class="row"><span class="label">Reg No:</span> <span class="val" id="d_regno"></span></div>
+      <div class="row"><span class="label">Email:</span> <span class="val" id="d_email"></span></div>
+      <div class="row"><span class="label">Campus:</span> <span class="val" id="d_campus"></span></div>
+  <div class="row"><span class="label">Year:</span> <span class="val" id="d_year"></span></div>
+      <div class="row"><span class="label">UTR:</span> <span class="val" id="d_utr"></span></div>
+      <div class="row"><span class="label">Amount:</span> <span class="val" id="d_amount"></span></div>
+      <div class="row"><span class="label">Events:</span> <span class="val" id="d_events"></span></div>
+      <div class="row"><span class="label">Timestamp:</span> <span class="val" id="d_ts"></span></div>
+      <div class="row"><span class="label">Status:</span> <span class="val" id="d_status"></span></div>
+    </div>
+    <div id="scanMessage" style="display:none; margin-top:10px; color:#c0392b; font-weight:700; text-align:center;">This QR is already scanned</div>
+    <div class="actions">
+      <button class="back" onclick="window.location.href='home.html'">Back</button>
+      <button class="clear" id="clearBtn">Clear</button>
+  <a class="export" href="/live-excel" target="_blank">See Live Excel Sheet</a>
+    </div>
+  </div>
+  <script>
+  const details = document.getElementById('details');
+  const scanMessageEl = document.getElementById('scanMessage');
+  const scannedSet = new Set(); // Track scanned QR codes for this session
+  const lastSeen = new Map(); // key -> timestamp of last detection
+  // Lightweight feedback helpers (sound + vibration)
+  let _audioCtx = null;
+  function beepOK() {
+    try {
+      _audioCtx = _audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      const ctx = _audioCtx;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = 1200; // brighter tone for audibility
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.18);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.19);
+    } catch (_) { /* ignore */ }
+  }
+  function hapticOK() {
+    try { if (navigator.vibrate) navigator.vibrate(80); } catch (_) { /* ignore */ }
+  }
+    const reader = new Html5Qrcode("reader");
+    const config = {
+      // Faster polling
+      fps: 30,
+      // Scan entire view (no qrbox) and use native detector when possible
+      experimentalFeatures: { useBarCodeDetectorIfSupported: true },
+      // Only look for QR codes for speed
+      formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
+      // Avoid unnecessary image transforms
+      disableFlip: true,
+      // Request camera constraints optimized for speed + clarity
+      videoConstraints: {
+        facingMode: { ideal: 'environment' },
+        width: { ideal: 640, max: 1280 },
+        height: { ideal: 480, max: 720 },
+        frameRate: { ideal: 30, max: 60 }
+      }
+    };
+
+    // Helper to manage start/stop for responsiveness and speed
+    let _scannerRunning = false;
+    async function startScanner() {
+      if (_scannerRunning) return;
+      try {
+        _scannerRunning = true;
+        await reader.start({ facingMode: "environment" }, config, onScanSuccess);
+      } catch (e) {
+        _scannerRunning = false;
+      }
+    }
+
+    // Amount details removed per request
+
+    function showData(obj) {
+      document.getElementById('d_name').textContent = obj.name || '';
+      document.getElementById('d_regno').textContent = obj.regno || '';
+      document.getElementById('d_email').textContent = obj.email || '';
+      document.getElementById('d_campus').textContent = obj.campus || '';
+  document.getElementById('d_year').textContent = obj.year || '';
+      document.getElementById('d_utr').textContent = obj.utr || '';
+      document.getElementById('d_amount').textContent = (obj.amount != null ? obj.amount : '');
+      document.getElementById('d_events').textContent = Array.isArray(obj.events) ? obj.events.join(', ') : (obj.events || '');
+      document.getElementById('d_ts').textContent = obj.ts || '';
+      details.style.display = 'block';
+    }
+
+    function onScanSuccess(decodedText) {
+      try {
+        const obj = JSON.parse(decodedText);
+        const utr = obj && obj.utr ? String(obj.utr) : '';
+        if (!/^\d{12}$/.test(utr)) {
+          // Invalid QR payload
+          details.style.display = 'none';
+          scanMessageEl.textContent = 'Invalid QR';
+          scanMessageEl.style.color = '#c0392b';
+          scanMessageEl.style.display = 'block';
+          return;
+        }
+
+        const key = 'UTR:' + utr;
+        const now = Date.now();
+        const prev = lastSeen.get(key) || 0;
+        const withinBurst = (now - prev) < 1500; // ignore rapid re-reads within 1.5s
+        lastSeen.set(key, now);
+        const isDuplicate = scannedSet.has(key);
+        if (isDuplicate && !withinBurst) {
+          // True rescan: show only the duplicate line; hide details
+          details.style.display = 'none';
+          scanMessageEl.textContent = 'This QR is already scanned';
+          scanMessageEl.style.color = '#c0392b';
+          scanMessageEl.style.display = 'block';
+          return;
+        } else if (isDuplicate && withinBurst) {
+          // Rapid re-read; do nothing to avoid flicker
+          return;
+        } else {
+          // First time seeing this code in this session
+          scannedSet.add(key);
+          scanMessageEl.style.display = 'none';
+        }
+
+        // Verify registration existence against backend (live excel/JSON)
+        const statusEl = document.getElementById('d_status');
+        const setStatus = (text, ok) => {
+          statusEl.textContent = text;
+          statusEl.style.color = ok ? '#27ae60' : '#c0392b';
+          statusEl.style.fontWeight = '700';
+        };
+        fetch('/api/registrations/' + encodeURIComponent(utr))
+          .then(async (r) => {
+            if (!r.ok) return { success: false };
+            try { return await r.json(); } catch { return { success: false }; }
+          })
+            .then(async data => {
+            if (data && data.success && data.registration) {
+              // Registered: show details and status
+              showData(obj);
+              setStatus('Registered', true);
+              try {
+                const reg = data.registration;
+                if (reg.amount != null) document.getElementById('d_amount').textContent = String(reg.amount);
+                if (reg.year) document.getElementById('d_year').textContent = String(reg.year);
+              } catch (e) {}
+                // Feedback for successful scan
+                beepOK();
+                hapticOK();
+              // Stop scanner after a successful registered read to save CPU
+                  try { await reader.stop(); _scannerRunning = false; } catch (e) {}
+            } else {
+              // Not registered: hide details and show only message
+              details.style.display = 'none';
+              setStatus('', false);
+              scanMessageEl.textContent = 'Not registered';
+              scanMessageEl.style.color = '#c0392b';
+              scanMessageEl.style.display = 'block';
+            }
+          })
+          .catch(() => {
+            details.style.display = 'none';
+            setStatus('', false);
+            scanMessageEl.textContent = 'Not registered';
+            scanMessageEl.style.color = '#c0392b';
+            scanMessageEl.style.display = 'block';
+          });
+      } catch (e) {
+        // Parsing failed: invalid QR
+        details.style.display = 'none';
+        scanMessageEl.textContent = 'Invalid QR';
+        scanMessageEl.style.color = '#c0392b';
+        scanMessageEl.style.display = 'block';
+      }
+    }
+
+  startScanner();
+
+    document.getElementById('clearBtn').onclick = async () => {
+      details.style.display = 'none';
+      ["d_name","d_regno","d_email","d_campus","d_year","d_utr","d_amount","d_events","d_ts"].forEach(id => document.getElementById(id).textContent = '');
+      scanMessageEl.style.display = 'none';
+      const statusEl = document.getElementById('d_status');
+      statusEl.textContent = '';
+      statusEl.style.color = '';
+      statusEl.style.fontWeight = '';
+      try { await reader.stop(); } catch (e) {}
+      _scannerRunning = false;
+      startScanner();
+    };
+
+  </script>
+</body>
+</html>

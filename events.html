@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHREST MAHOTSAV EVENTS SELECTION</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            background: linear-gradient(135deg, #f8ffae 0%, #43c6ac 50%, #191654 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 580px;
+            margin: 48px auto;
+            background: linear-gradient(to right, #e62ff0, #2196f3);
+            padding: 36px 38px 30px 38px;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+            position: relative;
+            overflow: hidden;
+        }
+        h2 {
+            text-align: center;
+            color: #eafbfd;
+            font-size: 2.1rem;
+            margin-bottom: 28px;
+            letter-spacing: 1px;
+        }
+        .section {
+            margin-bottom: 28px;
+            background-image: linear-gradient(to right, #9874ee, #ec73ca, #7eb7ef, #b978f6);
+        }
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: 600;
+            color: black;
+            text-align: left;
+            letter-spacing: 0.5px;
+        }
+        .maincontainer {
+            border: 2px solid #f7971e;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            background-attachment: fixed;
+            background-image: linear-gradient(to right, #a18cd1, #fbc2eb, #8ec5fc, #e0c3fc);
+        }
+        .event-list {
+            margin-bottom: 18px;
+        }
+        .event-list label {
+            display: inline-block; /* override global block display */
+            vertical-align: middle;
+            font-weight: 500;
+            margin-left: 8px;
+            margin-bottom: 0; /* avoid extra space under label */
+            color: #222;
+            font-size: 1.04rem;
+        }
+        .event-list input[type="checkbox"] {
+            accent-color: #f7971e;
+            width: 18px;
+            height: 18px;
+            vertical-align: middle;
+        }
+        button {
+            background: linear-gradient(90deg, #f7971e 0%, #ffd200 100%);
+            color: #fff;
+            border: none;
+            padding: 12px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.08rem;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 6px;
+            box-shadow: 0 2px 8px #0001;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        button:disabled {
+            background: #b2bec3;
+            color: #fff;
+            cursor: not-allowed;
+        }
+        .success {
+            color: #27ae60;
+            margin-bottom: 10px;
+            font-size: 0.98rem;
+            font-weight: 500;
+        }
+        /* Celebration banner */
+        .celebrate {
+            display: none;
+            margin-top: 16px;
+            padding: 18px;
+            border-radius: 14px;
+            text-align: center;
+            color: #ffffff;
+            background: linear-gradient(135deg, #ff6a88 0%, #ff99ac 40%, #86a8e7 100%);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .celebrate .big {
+            display: block;
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+            margin-bottom: 6px;
+        }
+        .celebrate .sub {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 18px 6vw 18px 6vw;
+            }
+            h2 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Select Your Events (if you are interested)</h2>
+        
+    <div id="no-registrations-msg" style="display:none; color:#e74c3c; text-align:center; font-weight:600; margin-bottom:18px;">No registrations have been done yet.</div>
+    <form id="events-form">
+            <div class="section">
+                <div class="maincontainer">
+                <label>Non-Culturals</label>
+                <div class="event-list">
+                    <input type="checkbox" id="elocution" name="events" value="Elocution">
+                    <label for="elocution">Elocution</label><br>
+                    <input type="checkbox" id="essay" name="events" value="Essay Writing">
+                    <label for="essay">Essay Writing</label><br>
+                    <input type="checkbox" id="drawing" name="events" value="Drawing">
+                    <label for="model">Drawing</label><br>
+                    <input type="checkbox" id="poster" name="events" value="Poster Making">
+                    <label for="poster">Poster Making</label>
+                </div>
+                </div>
+            </div>
+            <div class="section">
+                <div class="maincontainer">
+                <label>Culturals</label>
+                <div class="event-list">
+                    <input type="checkbox" id="singing-solo" name="events" value="Singing (Solo)">
+                    <label for="singing-solo">Singing (Solo)</label><br>
+                    <input type="checkbox" id="singing-group" name="events" value="Singing (Group)">
+                    <label for="singing-group">Singing (Group)</label><br>
+                    <input type="checkbox" id="classical-solo" name="events" value="Classical Dance (Solo)">
+                    <label for="classical-solo">Classical Dance (Solo)</label><br>
+                    <input type="checkbox" id="classical-group" name="events" value="Classical Dance (Group)">
+                    <label for="classical-group">Classical Dance (Group)</label><br>
+                    <input type="checkbox" id="folk-solo" name="events" value="Folk Dance (Solo)">
+                    <label for="folk-solo">Folk Dance (Solo)</label><br>
+                    <input type="checkbox" id="folk-group" name="events" value="Folk Dance (Group)">
+                    <label for="folk-group">Folk Dance (Group)</label><br>
+                    <input type="checkbox" id="instrumental-solo" name="events" value="Instrumental (Solo)">
+                    <label for="instrumental-solo">Instrumental (Solo)</label><br>
+                    <input type="checkbox" id="instrumental-group" name="events" value="Instrumental (Group)">
+                    <label for="instrumental-group">Instrumental (Group)</label><br>
+                </div>
+                </div>
+            </div>
+            <button type="submit" id="submit-btn">Submit Events</button>
+            <div class="success" id="success-msg"></div>
+            <div id="celebration" class="celebrate"></div>
+            <div id="qr-wrapper" style="display:none; text-align:center; margin-top:12px;">
+                <div style="font-weight:600; color:#191654; margin-bottom:8px;">Your QR Code</div>
+                <img id="qr-preview" alt="QR Code" style="max-width:220px; border:1px solid #eee; padding:6px; border-radius:8px; background:#fff; box-shadow:0 2px 8px #0001;" />
+                <div style="margin-top:8px;">
+                    <a id="qr-link" href="#" download style="color:#191654; font-weight:600; text-decoration:underline;">Download QR</a>
+                </div>
+                <div style="margin-top:10px;">
+                    <a id="open-big" href="celebration.html" style="color:#191654; font-weight:800; text-decoration:underline;">Open in big view</a>
+                </div>
+            </div>
+            <div class="error" id="error-msg"></div>
+        </form>
+    </div>
+    <script>
+        // AJAX check for registrations (no UI message shown)
+        fetch('/api/has-registrations')
+            .then(res => res.json())
+            .then(data => {
+                if (!data.hasRegistrations) {
+                    // Intentionally no UI action
+                }
+            })
+            .catch(() => {
+                // Non-blocking if this check fails
+            });
+        
+        // On page load, check if registration data exists
+        window.onload = function() {
+            const regData = localStorage.getItem('shrest_registration');
+            if (!regData) {
+                alert('Please complete registration first.');
+                window.location.href = 'shrestregistration.html';
+            }
+        };
+
+        document.getElementById('events-form').onsubmit = function(e) {
+            e.preventDefault();
+            const checked = Array.from(document.querySelectorAll('input[name="events"]:checked')).map(cb => cb.value);
+            const submitBtn = document.getElementById('submit-btn');
+            const successMsg = document.getElementById('success-msg');
+            const errorMsg = document.getElementById('error-msg');
+            successMsg.textContent = '';
+            errorMsg.textContent = '';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            // Participation is optional, so allow empty selection
+            if (checked.length === 0) {
+                if (!confirm('You have not selected any events. Do you want to continue without participating?')) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit Events';
+                    return;
+                }
+            }
+            // Retrieve registration data from localStorage
+            const regData = JSON.parse(localStorage.getItem('shrest_registration') || '{}');
+            // Attach amount from fee selection (saved earlier)
+            let amt = 0;
+            try { amt = Number(localStorage.getItem('shrest.fee') || '0') || 0; } catch(_) { amt = 0; }
+            // Send to backend
+            fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...regData, amount: amt, events: checked })
+            })
+            .then(async res => {
+                const ct = res.headers.get('content-type') || '';
+                if (!res.ok) {
+                    const text = await res.text();
+                    throw new Error(`HTTP ${res.status}: ${text.slice(0,200)}`);
+                }
+                if (ct.includes('application/json')) {
+                    return res.json();
+                }
+                const text = await res.text();
+                throw new Error('Unexpected response: ' + text.slice(0,200));
+            })
+            .then(data => {
+                if (data.success) {
+                    const noEvents = checked.length === 0;
+                    successMsg.textContent = noEvents
+                        ? 'Registration submitted successfully! (No events selected)'
+                        : 'Events submitted successfully!';
+                    // Style as white and bold for the no-events message
+                    if (noEvents) {
+                        successMsg.style.color = '#ffffff';
+                        successMsg.style.fontWeight = '800';
+                    } else {
+                        successMsg.style.color = '#ffffff';
+                        successMsg.style.fontWeight = '600';
+                    }
+                    if (data.qrUrl) {
+                        const qrWrapper = document.getElementById('qr-wrapper');
+                        const qrImg = document.getElementById('qr-preview');
+                        const qrLink = document.getElementById('qr-link');
+                        qrImg.src = data.qrUrl;
+                        qrLink.href = data.qrUrl;
+                        const filename = data.qrUrl.split('/').pop() || 'qr.png';
+                        qrLink.setAttribute('download', filename);
+                        qrWrapper.style.display = 'block';
+                        try { localStorage.setItem('shrest.qrUrl', String(data.qrUrl)); } catch(_) {}
+                        // Update big view link with query param for portability
+                        const big = document.getElementById('open-big');
+                        if (big) big.href = 'celebration.html?qr=' + encodeURIComponent(data.qrUrl);
+                    }
+                    localStorage.removeItem('shrest_registration');
+                    submitBtn.textContent = 'Success!';
+                    submitBtn.disabled = true;
+                    // Navigate to larger celebration view with QR
+                    const savedQR = (function(){ try { return localStorage.getItem('shrest.qrUrl') || ''; } catch(_) { return ''; } })();
+                    if (savedQR) {
+                        window.location.href = 'celebration.html?qr=' + encodeURIComponent(savedQR);
+                    }
+                } else {
+                    throw new Error(data.message || 'Submission failed.');
+                }
+            })
+            .catch(err => {
+                errorMsg.textContent = 'Submission failed. ' + (err && err.message ? err.message : 'Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Events';
+            });
+        };
+    </script>
+</body>
+</html>

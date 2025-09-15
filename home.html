@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SHREST MAHOTSAV 2K25</title>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background: linear-gradient(135deg,#f935f9 0%,#57c5f8 95%); }
+    .layout { width: 96%; max-width: 980px; display:flex; gap:18px; align-items:stretch; justify-content:center; padding: 10px; }
+    .card { width: 100%; max-width: 520px; background:#fff; border-radius:16px; padding:28px; box-shadow:0 10px 30px rgba(0,0,0,0.08); text-align:center; }
+    h1 { margin:0 0 10px; color:#1a2980; }
+    p { color:#34495e; }
+    .actions { display:flex; gap:14px; margin-top:24px; }
+    .btn { flex:1; padding:12px 16px; border:none; border-radius:8px; font-weight:600; cursor:pointer; color:#fff; box-shadow:0 2px 8px #0001; transition: transform .08s ease-in-out; }
+    .btn:hover { transform: translateY(-1px); }
+    .student { background: linear-gradient(90deg,#1a2980 0%, #26d0ce 100%); }
+    .organiser { background: linear-gradient(90deg,#f7971e 0%, #ffd200 100%); }
+    .note { margin-top:14px; color:#7f8c8d; font-size:.94rem; }
+    
+    /* Modal styles */
+    .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.45); display:none; align-items:center; justify-content:center; z-index:1000; }
+    .modal { width:92%; max-width:380px; background:#fff; border-radius:12px; padding:18px; box-shadow:0 10px 30px rgba(0,0,0,0.25); }
+    .modal h3 { margin:0 0 10px; color:#1a2980; }
+    .modal .field { margin:10px 0 6px; }
+    .modal input[type="password"] { width:90%; padding: 10px; border:1.5px solid #b2bec3; border-radius:6px; font-size:1rem; }
+    .modal .actions { display:flex; gap:10px; margin-top:12px; }
+    .btn-secondary { background:#b2bec3; color:#fff; }
+    .btn-primary { background: linear-gradient(90deg,#1a2980 0%, #26d0ce 100%); }
+    .error { color:#e53935; font-size:.92rem; min-height:18px; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="card">
+      <h1>SHREST MAHOTSAV 2K25</h1>
+      <p>Welcome! Please choose your path below.</p>
+      <div class="actions">
+        <button id="studentBtn" class="btn student">Student Registration</button>
+        <button id="organiserBtn" class="btn organiser">Organisers</button>
+      </div>
+      <div class="note">Organisers require a passcode to access scanning tools.</div>
+    </div>
+    
+  </div>
+  <!-- Organiser password modal -->
+  <div id="passModal" class="modal-backdrop">
+    <div class="modal">
+      <h3>Organiser Access</h3>
+      <div class="field">
+        <label for="organiserPass" style="display:block; margin-bottom:6px; color:#34495e; font-weight:600;">Enter Passcode</label>
+        <input type="password" id="organiserPass" placeholder="Passcode" />
+      </div>
+      <div id="passError" class="error"></div>
+      <div class="actions">
+        <button id="cancelPass" class="btn btn-secondary" type="button">Cancel</button>
+        <button id="submitPass" class="btn btn-primary" type="button">Continue</button>
+      </div>
+      <div id="backRow" style="display:none; margin-top:10px; text-align:right;">
+        <button id="backPass" class="btn btn-secondary" type="button">Back</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.getElementById('studentBtn').onclick = () => {
+      window.location.href = 'shrestregistration.html';
+    };
+    const modal = document.getElementById('passModal');
+    const passInput = document.getElementById('organiserPass');
+    const passError = document.getElementById('passError');
+    const backRow = document.getElementById('backRow');
+    const backPass = document.getElementById('backPass');
+    const openModal = () => { modal.style.display = 'flex'; passError.textContent=''; passInput.value=''; backRow.style.display='none'; setTimeout(() => passInput.focus(), 0); };
+    const closeModal = () => { modal.style.display = 'none'; };
+    document.getElementById('organiserBtn').onclick = () => { openModal(); };
+    document.getElementById('cancelPass').onclick = () => { closeModal(); };
+    document.getElementById('submitPass').onclick = () => {
+      const pwd = passInput.value;
+      if (pwd === 'CHEPPANU') {
+        window.location.href = 'qrscanner.html';
+      } else {
+        passError.textContent = 'Incorrect password.';
+        backRow.style.display = 'block';
+        passInput.focus();
+        passInput.select();
+      }
+    };
+    backPass.onclick = () => { closeModal(); };
+    passInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        document.getElementById('submitPass').click();
+      } else if (e.key === 'Escape') {
+        closeModal();
+      }
+    });
+  </script>
+</body>
+</html>
