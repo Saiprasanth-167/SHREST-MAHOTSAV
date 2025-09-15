@@ -806,7 +806,7 @@
 				return;
 			}
 			try {
-				const response = await fetch('/api/send-otp', {
+				const response = await fetch('http://localhost:8000/api/send-otp', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({ email })
@@ -854,7 +854,7 @@
 			successDiv.textContent = '';
 			errorDiv.textContent = '';
 			try {
-				const response = await fetch('/api/send-otp', {
+				const response = await fetch('http://localhost:8000/api/send-otp', {
 					method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email })
 				});
 				const data = await response.json();
@@ -882,7 +882,7 @@
 			errorDiv.textContent = '';
 			successDiv.textContent = '';
 			try {
-				const response = await fetch('/api/verify-otp', {
+				const response = await fetch('http://localhost:8000/api/verify-otp', {
 					method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, otp })
 				});
 				const ct = response.headers.get('content-type') || '';

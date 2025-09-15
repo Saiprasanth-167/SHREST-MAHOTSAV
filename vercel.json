@@ -1,13 +1,10 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "version": 2,
-  "name": "shrest-mahotsav",
-  "redirects": [
-    { "source": "/", "destination": "/home.html", "permanent": false }
-  ],
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/proxy/api/$1" },
-    { "source": "/live-excel", "destination": "/api/proxy/live-excel" },
-    { "source": "/download-excel", "destination": "/api/proxy/download-excel" }
-  ]
+	"rewrites": [
+		{ "source": "/", "destination": "/home.html" },
+		{ "source": "/home", "destination": "/home.html" },
+		{ "source": "/shrestregistration", "destination": "/shrestregistration.html" },
+		{ "source": "/qrscanner", "destination": "/qrscanner.html" },
+		{ "source": "/events", "destination": "/events.html" },
+		{ "source": "/celebration", "destination": "/celebration.html" }
+	]
 }

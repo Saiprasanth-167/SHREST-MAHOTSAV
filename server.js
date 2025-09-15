@@ -7,7 +7,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const app = express();
-const PORT = process.env.PORT ? Number(process.env.PORT) : 8000;
+const PORT = 8000;
 // Request logging disabled per requirements; keep minimal logging only where needed.
 // Serve home at root
 app.get('/', (req, res) => {
@@ -671,5 +671,5 @@ app.get('/api/registrations/:utr', (req, res) => {
 app.use(express.static(__dirname));
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
 });
