@@ -1,17 +1,25 @@
 {
-  "functions": {
-    "api/**/*.js": { "runtime": "nodejs18.x" }
-  },
-  "routes": [
-    { "src": "/api/register", "dest": "/api/register.js" },
-    { "src": "/api/validate-utr", "dest": "/api/validate-utr.js" },
-    { "src": "/api/upi-qr", "dest": "/api/upi-qr.js" },
-    { "src": "/api/upi-config", "dest": "/api/upi-config.js" },
-    { "src": "/api/send-otp", "dest": "/api/send-otp.js" },
-    { "src": "/api/verify-otp", "dest": "/api/verify-otp.js" },
-    { "src": "/api/live-excel", "dest": "/api/live-excel.js" },
-    { "src": "/api/download-excel", "dest": "/api/download-excel.js" },
-    { "src": "/api/registrations/(.*)", "dest": "/api/registrations/$1" },
-    { "src": "/(.*)", "dest": "/$1" }
-  ]
+  "builds": [
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "rewrites": [
+    { "source": "/", "destination": "/home.html" },
+    { "source": "/shrestregistration", "destination": "/shrestregistration.html" },
+    { "source": "/events", "destination": "/events.html" },
+    { "source": "/qrscanner", "destination": "/qrscanner.html" },
+    { "source": "/celebration", "destination": "/celebration.html" },
+    { "source": "/live-excel", "destination": "/api/live-excel.js" },
+    { "source": "/download-excel", "destination": "/api/download-excel.js" },
+    { "source": "/api/register", "destination": "/api/register.js" },
+    { "source": "/api/validate-utr", "destination": "/api/validate-utr.js" },
+    { "source": "/api/upi-qr", "destination": "/api/upi-qr.js" },
+    { "source": "/api/upi-config", "destination": "/api/upi-config.js" },
+    { "source": "/api/send-otp", "destination": "/api/send-otp.js" },
+    { "source": "/api/verify-otp", "destination": "/api/verify-otp.js" },
+    { "source": "/api/registrations/:utr", "destination": "/api/registrations/[utr].js" }
+  ],
+  "version": 2
 }
