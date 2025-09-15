@@ -1,4 +1,4 @@
-	<!-- Tesseract.js for OCR -->
+<!-- Tesseract.js for OCR -->
 	<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.1/dist/tesseract.min.js"></script>
 <!DOCTYPE html>
 <html lang="en">
@@ -284,6 +284,7 @@
 			</div>
 			<input type="hidden" id="utr-hidden" name="utr">
 			<input type="hidden" id="screenshot-hidden" name="screenshot">
+			<div class="error" id="form-submit-error"></div>
 			<button type="submit" id="submit-btn">Submit</button>
 		</form>
 	</div>
@@ -749,6 +750,38 @@
 			const submitBtn = document.getElementById('submit-btn');
 			submitBtn.disabled = true;
 			submitBtn.textContent = 'Validating...';
+			const formErrorDiv = document.getElementById('form-submit-error');
+			formErrorDiv.textContent = '';
+
+			// Final UTR check before submission
+			const utrVal = document.getElementById('utr-hidden').value;
+			if (!utrVal) {
+				formErrorDiv.textContent = 'UTR not found. Please complete the UTR validation step first.';
+				submitBtn.disabled = false;
+				submitBtn.textContent = 'Submit';
+				return;
+			}
+
+			try {
+				const resp = await fetch('/api/validate-utr', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ utr: utrVal })
+				});
+				const data = await resp.json();
+				if (data.duplicate) {
+					formErrorDiv.textContent = 'This UTR number has already been used. Please go back and use a different one.';
+					submitBtn.disabled = false;
+					submitBtn.textContent = 'Submit';
+					return;
+				}
+			} catch (err) {
+				formErrorDiv.textContent = 'A network error occurred. Please try again.';
+				submitBtn.disabled = false;
+				submitBtn.textContent = 'Submit';
+				return;
+			}
+
 			// Validate registration number: numbers only, minimum 5 digits
 			const regnoInput = document.getElementById('regno');
 			const regnoErr = document.getElementById('regno-error');
@@ -761,36 +794,7 @@
 				submitBtn.textContent = 'Submit';
 				return;
 			}
-			const utrVal = document.getElementById('utr').value.trim();
-			document.getElementById('utr-hidden').value = utrVal;
-			const utrError = document.getElementById('utr-error');
-			const emojiDiv = document.getElementById('utr-emoji');
-			try {
-				const resp = await fetch('/api/validate-utr', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ utr: utrVal })
-				});
-				const data = await resp.json();
-				if (!data.valid || data.duplicate) {
-					utrError.textContent = data.duplicate ? 'This UTR has already been used.' : (data.message || 'Invalid UTR number.');
-					emojiDiv.style.display = 'block';
-					// Bring user back to UTR section so emoji is visible
-					document.getElementById('registration-form').classList.add('hidden');
-					document.getElementById('utr-section').classList.remove('hidden');
-					submitBtn.disabled = false;
-					submitBtn.textContent = 'Submit';
-					return;
-				}
-			} catch (err) {
-				utrError.textContent = 'Network error validating UTR.';
-				emojiDiv.style.display = 'block';
-				document.getElementById('registration-form').classList.add('hidden');
-				document.getElementById('utr-section').classList.remove('hidden');
-				submitBtn.disabled = false;
-				submitBtn.textContent = 'Submit';
-				return;
-			}
+
 			// Gather registration data after validation passes
 			const selectedCourse = document.getElementById('course').value;
 			const regData = {
@@ -821,7 +825,7 @@
 				})(),
 				year: document.getElementById('year').value,
 				campus: document.getElementById('campus').value,
-				utr: utrVal,
+				utr: document.getElementById('utr-hidden').value,
 				screenshot: document.getElementById('screenshot-hidden').value
 			};
 			// Store in localStorage and go to events
