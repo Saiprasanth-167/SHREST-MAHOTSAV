@@ -13,7 +13,15 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, message: 'Method Not Allowed' });
   }
-  const client = await connectToDatabase();
+
+  let client;
+  try {
+    client = await connectToDatabase();
+  } catch (e) {
+    console.error('Database connection failed:', e);
+    return res.status(500).json({ success: false, message: 'Database connection failed.', error: e.message });
+  }
+
   try {
     const data = req.body;
     const entry = { ...data, timestamp: new Date().toISOString() };
@@ -30,6 +38,8 @@ module.exports = async (req, res) => {
     console.error('Error in /api/register:', e);
     res.status(500).json({ success: false, message: 'Failed to save registration.', error: e.message });
   } finally {
-    await client.end();
+    if (client) {
+      await client.end();
+    }
   }
 };
