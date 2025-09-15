@@ -761,7 +761,8 @@
 				submitBtn.textContent = 'Submit';
 				return;
 			}
-			const utrVal = document.getElementById('utr-hidden').value;
+			const utrVal = document.getElementById('utr').value.trim();
+			document.getElementById('utr-hidden').value = utrVal;
 			const utrError = document.getElementById('utr-error');
 			const emojiDiv = document.getElementById('utr-emoji');
 			try {
