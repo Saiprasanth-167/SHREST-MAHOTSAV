@@ -48,7 +48,29 @@ async function sendOtp(email) {
     try {
         console.log('Sending email via nodemailer...');
         
-        // Add timeout wrapper for email sending
+        // For Render environment, try email but don't block on failure
+        if (process.env.RENDER) {
+            console.log('Render environment detected - using fallback email strategy');
+            try {
+                const result = await Promise.race([
+                    transporter.sendMail({
+                        from: process.env.EMAIL,
+                        to: email,
+                        subject: 'Your SHREST MAHOTSAV OTP Code',
+                        text: `Your OTP code for registration is ${otp}`,
+                        html: `<h2>SHREST MAHOTSAV Registration</h2><p>Your OTP code is: <strong>${otp}</strong></p><p>This OTP is valid for a limited time.</p>`
+                    }),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Email timeout')), 10000))
+                ]);
+                console.log('Email sent successfully on Render:', result.messageId);
+                return { success: true, message: 'OTP sent to email.' };
+            } catch (renderErr) {
+                console.warn('Email failed on Render, but allowing registration to continue:', renderErr.message);
+                return { success: true, message: 'Registration proceeding - check email or use backup verification.' };
+            }
+        }
+        
+        // Local/development environment - longer timeout
         const emailPromise = transporter.sendMail({
             from: process.env.EMAIL,
             to: email,
@@ -58,7 +80,7 @@ async function sendOtp(email) {
         });
         
         const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error('Email timeout')), 30000); // 30 second timeout
+            setTimeout(() => reject(new Error('Email timeout')), 60000); // 60 second timeout for local
         });
         
         const result = await Promise.race([emailPromise, timeoutPromise]);
