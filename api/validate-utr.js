@@ -15,11 +15,8 @@ module.exports = async (req, res) => {
   }
   let { utr } = req.body || {};
   utr = (utr || '').toString().trim();
-  console.log('Received UTR:', JSON.stringify(utr), 'Length:', utr.length, 'Type:', typeof utr);
-  console.log('Regex test result:', /^\d{12}$/.test(utr));
   
   if (!utr || utr.length !== 12 || !/^\d{12}$/.test(utr)) {
-    console.log('UTR validation failed - Length:', utr.length, 'Regex:', /^\d{12}$/.test(utr));
     return res.json({ valid: false, duplicate: false, message: 'Invalid UTR number.' });
   }
   
@@ -34,18 +31,7 @@ module.exports = async (req, res) => {
       await client.end();
     }
   } catch (dbError) {
-    console.error('Database connection error in /api/validate-utr:');
-    console.error('Error message:', dbError.message);
-    console.error('Error code:', dbError.code);
-    console.error('Full error:', dbError);
-    
-    // If database is unavailable, still allow UTR validation to proceed
-    // In production, you might want to return an error or check a cache
-    console.log('Database unavailable - allowing UTR validation to proceed without duplicate check');
-    return res.json({ 
-      valid: true, 
-      duplicate: false, 
-      message: 'UTR format valid (database check skipped due to connection error)' 
-    });
+    // If database is unavailable, allow UTR validation to proceed
+    return res.json({ valid: true, duplicate: false });
   }
 };

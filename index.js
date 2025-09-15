@@ -65,22 +65,8 @@ app.get('*', (req, res) => {
 
 // Only start server if not in serverless environment
 if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
-    const server = app.listen(PORT, '0.0.0.0', () => {
+    app.listen(PORT, '0.0.0.0', () => {
         console.log(`🚀 SHREST MAHOTSAV Server running on port ${PORT}`);
-        console.log(`📱 Environment: ${process.env.NODE_ENV || 'development'}`);
-        if (process.env.RENDER) {
-            console.log(`🌐 Render deployment detected - listening on all interfaces`);
-        } else {
-            console.log(`📱 Local: http://localhost:${PORT}`);
-        }
-    });
-    
-    // Graceful shutdown
-    process.on('SIGTERM', () => {
-        console.log('SIGTERM received, shutting down gracefully');
-        server.close(() => {
-            console.log('Process terminated');
-        });
     });
 }
 
