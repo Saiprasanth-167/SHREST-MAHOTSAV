@@ -13,8 +13,10 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).send('Method Not Allowed');
   }
-  const { utr } = req.body || {};
-  if (!/^\d{12}$/.test(utr || '')) {
+  let { utr } = req.body || {};
+  utr = (utr || '').toString().trim();
+  console.log('Received UTR:', utr);
+  if (!/^\d{12}$/.test(utr)) {
     return res.json({ valid: false, duplicate: false, message: 'Invalid UTR number.' });
   }
   const client = await connectToDatabase();
