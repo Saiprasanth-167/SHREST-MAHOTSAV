@@ -38,12 +38,12 @@ module.exports = async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD
+        user: "shrestmahotsav@gmail.com",
+        pass: "rcyf kxxz pqym ndlh"
       }
     });
     const mailOptions = {
-      from: process.env.EMAIL,
+      from: "shrestmahotsav@gmail.com",
       to: entry.email,
       subject: 'SHREST Registration QR Code',
       text: 'Thank you for registering. Your QR code is attached. Please present it at the venue.',

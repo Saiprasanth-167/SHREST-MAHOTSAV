@@ -5,8 +5,8 @@ const otpStore = {};
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD
+        user: "shrestmahotsav@gmail.com",
+        pass: "rcyf kxxz pqym ndlh"
     },
     secure: false,
     connectionTimeout: 30000,
@@ -29,7 +29,7 @@ async function sendOtp(email) {
         try {
             // Quick attempt to send email
             const emailPromise = transporter.sendMail({
-                from: process.env.EMAIL,
+                from: "shrestmahotsav@gmail.com",
                 to: email,
                 subject: 'Your SHREST MAHOTSAV OTP Code',
                 text: `Your OTP code for registration is ${otp}`,
@@ -52,7 +52,7 @@ async function sendOtp(email) {
     // Local environment - normal email sending
     try {
         const emailPromise = transporter.sendMail({
-            from: process.env.EMAIL,
+            from: "shrestmahotsav@gmail.com",
             to: email,
             subject: 'Your SHREST MAHOTSAV OTP Code',
             text: `Your OTP code for registration is ${otp}`,
