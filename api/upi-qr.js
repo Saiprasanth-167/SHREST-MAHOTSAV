@@ -11,16 +11,26 @@ module.exports = async (req, res) => {
         const tn = String(req.query.tn || '').trim();
         const tr = String(req.query.tr || '').trim();
 
-        if (!pa) return res.status(400).send('UPI VPA not configured');
-        if (!am || isNaN(Number(am)) || Number(am) <= 0) return res.status(400).send('Invalid amount');
+        if (!pa) {
+            return res.status(400).send('UPI VPA not configured');
+        }
+        if (!am || isNaN(Number(am)) || Number(am) <= 0) {
+            return res.status(400).send('Invalid amount');
+        }
 
         const params = new URLSearchParams();
         params.set('pa', pa);
-        if (pn) params.set('pn', pn);
+        if (pn) {
+            params.set('pn', pn);
+        }
         params.set('am', String(Number(am)));
         params.set('cu', 'INR');
-        if (tn) params.set('tn', tn);
-        if (tr) params.set('tr', tr);
+        if (tn) {
+            params.set('tn', tn);
+        }
+        if (tr) {
+            params.set('tr', tr);
+        }
 
         const url = 'upi://pay?' + params.toString();
         const buf = await QRCode.toBuffer(url, { width: 520, margin: 1 });
