@@ -1,25 +1,14 @@
 {
-  "builds": [
-    {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "@vercel/node@3"
     }
-  ],
+  },
   "rewrites": [
     { "source": "/", "destination": "/home.html" },
-    { "source": "/shrestregistration", "destination": "/shrestregistration.html" },
-    { "source": "/events", "destination": "/events.html" },
-    { "source": "/qrscanner", "destination": "/qrscanner.html" },
-    { "source": "/celebration", "destination": "/celebration.html" },
-    { "source": "/live-excel", "destination": "/api/live-excel.js" },
-    { "source": "/download-excel", "destination": "/api/download-excel.js" },
-    { "source": "/api/register", "destination": "/api/register.js" },
-    { "source": "/api/validate-utr", "destination": "/api/validate-utr.js" },
-    { "source": "/api/upi-qr", "destination": "/api/upi-qr.js" },
-    { "source": "/api/upi-config", "destination": "/api/upi-config.js" },
-    { "source": "/api/send-otp", "destination": "/api/send-otp.js" },
-    { "source": "/api/verify-otp", "destination": "/api/verify-otp.js" },
-    { "source": "/api/registrations/:utr", "destination": "/api/registrations/[utr].js" }
-  ],
-  "version": 2
+    { "source": "/shrestregistration", "destination": "/public/shrestregistration.html" },
+    { "source": "/events", "destination": "/public/events.html" },
+    { "source": "/qrscanner", "destination": "/public/qrscanner.html" },
+    { "source": "/celebration", "destination": "/public/celebration.html" }
+  ]
 }
