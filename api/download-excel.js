@@ -1,3 +1,5 @@
+const _fetch = (globalThis.fetch ? ((...a) => globalThis.fetch(...a)) : require('node-fetch'));
+
 module.exports = async (req, res) => {
 	try {
 		const base = (process.env.BACKEND_BASE_URL || '').replace(/\/$/, '');
@@ -5,7 +7,7 @@ module.exports = async (req, res) => {
 			res.status(500).send('BACKEND_BASE_URL not configured');
 			return;
 		}
-		const upstream = await fetch(base + '/download-excel');
+		const upstream = await _fetch(base + '/download-excel');
 		res.status(upstream.status);
 		const ct = upstream.headers.get('content-type');
 		if (ct) res.setHeader('content-type', ct);

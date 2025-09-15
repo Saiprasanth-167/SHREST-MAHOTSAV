@@ -62,7 +62,7 @@
   </div>
   <script>
     document.getElementById('studentBtn').onclick = () => {
-      window.location.href = 'public/shrestregistration.html';
+      window.location.href = '/shrestregistration';
     };
     const modal = document.getElementById('passModal');
     const passInput = document.getElementById('organiserPass');
@@ -76,7 +76,7 @@
     document.getElementById('submitPass').onclick = () => {
       const pwd = passInput.value;
       if (pwd === 'CHEPPANU') {
-        window.location.href = 'public/qrscanner.html';
+        window.location.href = '/qrscanner';
       } else {
         passError.textContent = 'Incorrect password.';
         backRow.style.display = 'block';

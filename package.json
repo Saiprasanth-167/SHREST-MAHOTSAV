@@ -1,9 +1,22 @@
 {
-	"name": "shrest-mahotsav-static",
-	"version": "1.0.0",
-	"private": true,
-	"description": "Static frontend for SHREST MAHOTSAV",
-	"scripts": {
-		"build": "echo Static site - no build step"
-	}
+  "name": "shrest-mahotsav",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "nodemailer": "^6.9.13",
+    "pg": "^8.11.3",
+    "qrcode": "^1.5.3",
+    "xlsx": "^0.18.5"
+  }
 }

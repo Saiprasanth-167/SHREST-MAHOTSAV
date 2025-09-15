@@ -1,4 +1,5 @@
 const { URL } = require('url');
+const _fetch = (globalThis.fetch ? ((...a) => globalThis.fetch(...a)) : require('node-fetch'));
 
 module.exports = async (req, res) => {
   try {
@@ -42,7 +43,7 @@ module.exports = async (req, res) => {
       }
     }
 
-    const upstream = await fetch(destUrl.toString(), {
+  const upstream = await _fetch(destUrl.toString(), {
       method,
       headers,
       body,
