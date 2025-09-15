@@ -282,12 +282,6 @@
 					<option value="DWARAKANAGAR">DWARAKANAGAR</option>
 				</select>
 			</div>
-			<div class="form-group">
-				<label for="email">Email</label>
-				<input type="email" id="email" name="email" required>
-				<div class="error" id="email-error"></div>
-				<div class="success" id="email-success"></div>
-			</div>
 			<input type="hidden" id="utr-hidden" name="utr">
 			<input type="hidden" id="screenshot-hidden" name="screenshot">
 			<button type="submit" id="submit-btn">Submit</button>
@@ -826,7 +820,6 @@
 				})(),
 				year: document.getElementById('year').value,
 				campus: document.getElementById('campus').value,
-				email: document.getElementById('email').value.trim(),
 				utr: utrVal,
 				screenshot: document.getElementById('screenshot-hidden').value
 			};

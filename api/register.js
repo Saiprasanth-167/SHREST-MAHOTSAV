@@ -21,8 +21,8 @@ module.exports = async (req, res) => {
     if (utrCheck.rows[0].count > 0) {
       return res.status(409).json({ success: false, message: 'Duplicate UTR number.' });
     }
-    const insertQuery = `INSERT INTO registrations (name, regno, course, branch, section, year, campus, email, utr, amount, events, timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`;
-    const values = [entry.name, entry.regno, entry.course, entry.branch, entry.section, entry.year, entry.campus, entry.email, entry.utr, entry.amount, JSON.stringify(entry.events), entry.timestamp];
+    const insertQuery = `INSERT INTO registrations (name, regno, course, branch, section, year, campus, utr, amount, events, timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`;
+    const values = [entry.name, entry.regno, entry.course, entry.branch, entry.section, entry.year, entry.campus, entry.utr, entry.amount, JSON.stringify(entry.events), entry.timestamp];
     await client.query(insertQuery, values);
 
     res.json({ success: true, message: 'Registration successful!' });

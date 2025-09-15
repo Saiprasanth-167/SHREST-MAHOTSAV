@@ -110,7 +110,7 @@ router.get('/export-csv', async (req, res) => {
         // Create CSV headers
         const headers = [
             'ID', 'Timestamp', 'Name', 'Registration Number', 'Course', 'Branch', 
-            'Section', 'Year', 'Campus', 'Email', 'Payment Method', 'UTR', 'Transaction ID'
+            'Section', 'Year', 'Campus', 'Payment Method', 'UTR', 'Transaction ID'
         ];
         
         // Create CSV rows
@@ -127,7 +127,6 @@ router.get('/export-csv', async (req, res) => {
                 reg.section || '',
                 reg.year || '',
                 reg.campus || '',
-                reg.email || '',
                 reg.paymentMethod || '',
                 reg.utr || '',
                 reg.transactionId || ''
