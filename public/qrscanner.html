@@ -29,87 +29,97 @@
     <div class="details" id="details" style="display:none;">
       <div class="row"><span class="label">Name:</span> <span class="val" id="d_name"></span></div>
       <div class="row"><span class="label">Reg No:</span> <span class="val" id="d_regno"></span></div>
+      <div class="row"><span class="label">Mobile:</span> <span class="val" id="d_mobile"></span></div>
       <div class="row"><span class="label">Campus:</span> <span class="val" id="d_campus"></span></div>
-  <div class="row"><span class="label">Year:</span> <span class="val" id="d_year"></span></div>
+      <div class="row"><span class="label">Year:</span> <span class="val" id="d_year"></span></div>
       <div class="row"><span class="label">UTR:</span> <span class="val" id="d_utr"></span></div>
       <div class="row"><span class="label">Amount:</span> <span class="val" id="d_amount"></span></div>
       <div class="row"><span class="label">Events:</span> <span class="val" id="d_events"></span></div>
       <div class="row"><span class="label">Timestamp:</span> <span class="val" id="d_ts"></span></div>
     </div>
-    <div class="message" id="scan-message" style="display:none; text-align:center; margin-top:10px; font-weight:600;"></div>
+    <div id="scan-status" style="text-align: center; margin-top: 16px; font-weight: 600;"></div>
     <div class="actions">
       <button class="back" onclick="window.location.href='home.html'">Back</button>
       <button class="clear" id="clearBtn">Clear</button>
-  <a class="export" href="/live-excel" target="_blank">See Live Excel Sheet</a>
+      <a class="export" href="/live-excel" target="_blank">See Live Excel Sheet</a>
     </div>
   </div>
   <script>
     const details = document.getElementById('details');
+    const scanStatus = document.getElementById('scan-status');
     const reader = new Html5Qrcode("reader");
     const config = { fps: 10, qrbox: { width: 300, height: 300 } };
-    const scannedUtrs = new Set();
-    const scanMessage = document.getElementById('scan-message');
+    let scannedUtrs = new Set();
 
     function showData(obj) {
       document.getElementById('d_name').textContent = obj.name || '';
       document.getElementById('d_regno').textContent = obj.regno || '';
+      document.getElementById('d_mobile').textContent = obj.mobile || '';
       document.getElementById('d_campus').textContent = obj.campus || '';
       document.getElementById('d_year').textContent = obj.year || '';
       document.getElementById('d_utr').textContent = obj.utr || '';
       document.getElementById('d_amount').textContent = (obj.amount != null ? obj.amount : '');
       
-      let eventsText = '';
+      let eventsDisplay = '';
       if (obj.events) {
         try {
           const eventsArray = JSON.parse(obj.events);
-          eventsText = eventsArray.join(', ');
+          eventsDisplay = eventsArray.join(', ');
         } catch {
-          eventsText = obj.events;
+          eventsDisplay = obj.events;
         }
       }
-      document.getElementById('d_events').textContent = eventsText;
+      document.getElementById('d_events').textContent = eventsDisplay;
       
       document.getElementById('d_ts').textContent = obj.timestamp || '';
       details.style.display = 'block';
-      scanMessage.style.display = 'none';
-    }
-
-    function showMessage(text, isError) {
-        scanMessage.textContent = text;
-        scanMessage.style.color = isError ? '#e53935' : '#1a2980';
-        scanMessage.style.display = 'block';
-        details.style.display = 'none';
     }
 
     function onScanSuccess(decodedText) {
+      scanStatus.textContent = '';
+      scanStatus.style.color = 'black';
+
       try {
         const obj = JSON.parse(decodedText);
         if (!obj.utr) {
-            showMessage('Invalid QR', true);
-            return;
+          throw new Error("Invalid QR code: No UTR found.");
         }
 
         if (scannedUtrs.has(obj.utr)) {
-            showMessage('This QR is already scanned', true);
-            return;
+          scanStatus.textContent = 'This QR is already scanned.';
+          scanStatus.style.color = 'orange';
+          details.style.display = 'none';
+          return;
         }
 
         fetch('/api/registrations/' + encodeURIComponent(String(obj.utr)))
-            .then(r => r.json())
-            .then(data => {
-                if (data && data.success && data.registration) {
-                    scannedUtrs.add(obj.utr);
-                    showData(data.registration);
-                } else {
-                    showMessage('Invalid QR: Registration not found.', true);
-                }
-            })
-            .catch(() => {
-                showMessage('Error validating QR. Please check your connection.', true);
-            });
+          .then(res => {
+            if (res.status === 404) {
+              scanStatus.textContent = 'This QR is invalid (registration not found or deleted).';
+              scanStatus.style.color = 'red';
+              details.style.display = 'none';
+              return null;
+            }
+            return res.json();
+          })
+          .then(data => {
+            if (data && data.success && data.registration) {
+              showData(data.registration);
+              scannedUtrs.add(obj.utr);
+              scanStatus.textContent = 'Scan successful!';
+              scanStatus.style.color = 'green';
+            }
+          })
+          .catch(() => {
+            scanStatus.textContent = 'Error validating QR code.';
+            scanStatus.style.color = 'red';
+            details.style.display = 'none';
+          });
 
       } catch (e) {
-        showMessage('Invalid QR content', true);
+        scanStatus.textContent = 'This QR is invalid.';
+        scanStatus.style.color = 'red';
+        details.style.display = 'none';
       }
     }
 
@@ -117,8 +127,8 @@
 
     document.getElementById('clearBtn').onclick = () => {
       details.style.display = 'none';
-      scanMessage.style.display = 'none';
-      ["d_name","d_regno","d_campus","d_year","d_utr","d_amount","d_events","d_ts"].forEach(id => document.getElementById(id).textContent = '');
+      scanStatus.textContent = '';
+      ["d_name","d_regno","d_mobile","d_campus","d_year","d_utr","d_amount","d_events","d_ts"].forEach(id => document.getElementById(id).textContent = '');
     };
 
   </script>
