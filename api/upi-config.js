@@ -1,11 +1,11 @@
 // Simple UPI config endpoint for Render-compatible backend
 module.exports = async (req, res) => {
-  // You can update these details as needed
+  // Return fields as expected by frontend
   const upiDetails = {
-    upiId: "8374466616@ybl",
-    name: "BOOMIREDDY BALA SIDDHARA REDDY",
+    pa: "8374466616@ybl", // UPI ID
+    pn: "BOOMIREDDY BALA SIDDHARA REDDY", // Name
     amount: 100, // You can make this dynamic if needed
     note: "SHREST-MAHOTSAV_2K25 Registration Fee"
   };
-  res.json({ success: true, upi: upiDetails });
+  res.json({ success: true, ...upiDetails });
 };

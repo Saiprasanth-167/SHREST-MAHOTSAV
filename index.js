@@ -50,6 +50,7 @@ const wrapHandler = (handler) => async (req, res) => {
 
 // UPI QR API route (added after app and wrapHandler are defined)
 app.all('/api/upi-qr', wrapHandler(require('./api/upi-qr')));
+app.all('/api/validate-utr', wrapHandler(require('./api/validate-utr')));
 
 app.all('/api/register', wrapHandler(require('./api/register')));
 // Removed: OTP and email endpoints

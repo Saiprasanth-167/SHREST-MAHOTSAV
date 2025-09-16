@@ -48,7 +48,7 @@
     const details = document.getElementById('details');
     const scanStatus = document.getElementById('scan-status');
     const reader = new Html5Qrcode("reader");
-    const config = { fps: 10, qrbox: { width: 300, height: 300 } };
+  const config = { fps: 30, qrbox: { width: 300, height: 300 } };
     let scannedUtrs = new Set();
 
     function showData(obj) {
@@ -95,7 +95,7 @@
         fetch('/api/registrations/' + encodeURIComponent(String(obj.utr)))
           .then(res => {
             if (res.status === 404) {
-              scanStatus.textContent = 'This QR is invalid (registration not found or deleted).';
+              scanStatus.textContent = 'QR IS INVALID';
               scanStatus.style.color = 'red';
               details.style.display = 'none';
               return null;
