@@ -1,3 +1,4 @@
+app.all('/api/upi-qr', wrapHandler(require('./api/upi-qr')));
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
