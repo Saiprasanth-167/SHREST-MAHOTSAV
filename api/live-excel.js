@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
     const { rows } = await client.query('SELECT * FROM registrations ORDER BY timestamp DESC');
     
     // Define headers manually to ensure order and exclude 'id'
-    const headers = ['name', 'regno', 'mobile', 'course', 'branch', 'section', 'year', 'campus', 'utr', 'amount', 'events', 'timestamp'];
+    const headers = ['name', 'regno', 'course', 'branch', 'section', 'year', 'campus', 'utr', 'amount', 'events', 'timestamp'];
     
     const htmlHead = `<th>Actions</th>` + headers.map(h => `<th>${h}</th>`).join('');
     

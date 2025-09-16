@@ -49,7 +49,7 @@ async function handleRequest(req, res) {
         return res.status(400).json({ success: false, message: 'Invalid data format.' });
       }
       
-      const updateableFields = ['name', 'mobile', 'course', 'branch', 'section', 'year', 'campus', 'amount', 'events'];
+      const updateableFields = ['name', 'course', 'branch', 'section', 'year', 'campus', 'amount', 'events'];
       const queryParts = [];
       const queryValues = [];
       let valueIndex = 1;
@@ -58,13 +58,8 @@ async function handleRequest(req, res) {
         if (data.hasOwnProperty(field)) {
           queryParts.push(`${field} = $${valueIndex++}`);
           let value = data[field];
-          // The 'events' field from the form will be a comma-separated string.
-          // The database expects a JSON array string, so we convert it.
-          if (field === 'events' && typeof value === 'string') {
-            // Split the string into an array, trim whitespace from each item
-            const eventsArray = value.split(',').map(event => event.trim());
-            // Convert the array to a JSON string for DB storage
-            value = JSON.stringify(eventsArray);
+          if (field === 'events' && Array.isArray(value)) {
+            value = JSON.stringify(value);
           }
           queryValues.push(value);
         }
