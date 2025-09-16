@@ -4,7 +4,15 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="viewport" conten				<label for="regno">Registration Number</label>
+				<input type="text" id="regno" name="regno" required pattern="^\\d{5,}$" inputmode="numeric" placeholder="Enter registration number (min 5 digits)" title="Enter at least 5 digits (numbers only)">
+				<div class="error" id="regno-error"></div>
+			</div>
+			<div class="form-group">
+				<label for="mobile">Mobile Number</label>
+				<input type="tel" id="mobile" name="mobile" required pattern="^[6-9]\\d{9}$" inputmode="numeric" placeholder="Enter 10-digit mobile number" title="Enter a valid 10-digit mobile number starting with 6, 7, 8, or 9.">
+			</div>
+			<div class="form-group">dth=device-width, initial-scale=1.0">
 	<title>SHREST MAHOTSAV Registration FORM</title>
 	<style>
 		body {
@@ -235,6 +243,7 @@
 					<option value="">Select Branch</option>
 					<option value="CSE">CSE</option>
 					<option value="CSE(AI&ML)">CSE(AI&ML)</option>
+					<option value="ECE">ECE</option>
 					<option value="CIVIL">CIVIL</option>
 					<option value="MECHANICAL">MECHANICAL</option>
 				</select>
@@ -695,6 +704,8 @@
 						else if (year === '2' || year === '3' || year === '4') secs = ['A', 'B', 'C'];
 					} else if (branch === 'CSE(AI&ML)') {
 						if (year === '1') secs = ['A', 'B'];
+					} else if (branch === 'ECE') {
+						if (year === '1' || year === '2' || year === '3' || year === '4') secs = ['A', 'B'];
 					}
 					setSections(secs);
 				} else {
@@ -756,6 +767,7 @@
 			const regData = {
 				name: document.getElementById('name').value.trim(),
 				regno: document.getElementById('regno').value.trim(),
+				mobile: document.getElementById('mobile').value.trim(),
 				course: selectedCourse,
 				branch: (function(){
 					if (selectedCourse === 'B.Tech') return (document.getElementById('branch-btech').value || '');

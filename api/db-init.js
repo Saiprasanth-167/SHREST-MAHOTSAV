@@ -18,6 +18,7 @@ async function initializeDatabase() {
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         regno VARCHAR(50) NOT NULL,
+        mobile VARCHAR(20),
         course VARCHAR(100),
         branch VARCHAR(100),
         section VARCHAR(50),
