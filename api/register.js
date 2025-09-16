@@ -1,4 +1,5 @@
 const { Client } = require('pg');
+const qr = require('qrcode');
 
 async function connectToDatabase() {
   const client = new Client({
@@ -31,9 +32,22 @@ module.exports = async (req, res) => {
     }
     const insertQuery = `INSERT INTO registrations (name, regno, mobile, course, branch, section, year, campus, utr, amount, events, timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`;
     const values = [entry.name, entry.regno, entry.mobile, entry.course, entry.branch, entry.section, entry.year, entry.campus, entry.utr, entry.amount, JSON.stringify(entry.events), entry.timestamp];
-    await client.query(insertQuery, values);
+    const result = await client.query(insertQuery, values);
+    const newReg = result.rows[0];
 
-    res.json({ success: true, message: 'Registration successful!' });
+    // Generate QR code
+    const qrData = JSON.stringify({
+      name: newReg.name,
+      regno: newReg.regno,
+      campus: newReg.campus,
+      utr: newReg.utr,
+      amount: newReg.amount,
+      events: newReg.events,
+      ts: newReg.timestamp
+    });
+    const qrUrl = await qr.toDataURL(qrData);
+
+    res.json({ success: true, message: 'Registration successful!', qrUrl: qrUrl });
   } catch (e) {
     console.error('Error in /api/register:', e);
     res.status(500).json({ success: false, message: 'Failed to save registration.', error: e.message });

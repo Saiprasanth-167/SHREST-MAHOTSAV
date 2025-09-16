@@ -70,7 +70,7 @@ module.exports = async (req, res) => {
       </head>
       <body>
         <h1>Live Registration Data</h1>
-        <a href="/api/download-excel" class="download">Download Excel</a>
+        <a href="C:/Users/Sai prasanth/Desktop/SHREST MAHOTSAV/api/download-excel.js" class="download">Download Excel</a>
         <table>
           <thead><tr>${htmlHead}</tr></thead>
           <tbody>${htmlRows}</tbody>

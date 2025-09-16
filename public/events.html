@@ -284,7 +284,7 @@
                     submitBtn.disabled = true;
                     // Navigate to larger celebration view with QR
                     const savedQR = (function(){ try { return localStorage.getItem('shrest.qrUrl') || ''; } catch(_) { return ''; } })();
-                    window.location.href = '/celebration';
+                    window.location.href = `/celebration?qr=${encodeURIComponent(savedQR)}`;
                 } else {
                     throw new Error(data.message || 'Submission failed.');
                 }

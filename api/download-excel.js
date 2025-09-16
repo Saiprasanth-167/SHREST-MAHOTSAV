@@ -1,27 +1,51 @@
-const _fetch = (globalThis.fetch ? ((...a) => globalThis.fetch(...a)) : require('node-fetch'));
+const { Client } = require('pg');
+const xlsx = require('xlsx');
+
+async function connectToDatabase() {
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+  });
+  await client.connect();
+  return client;
+}
 
 module.exports = async (req, res) => {
-	try {
-		console.log('DEBUG BACKEND_BASE_URL:', process.env.BACKEND_BASE_URL);
-		const base = (process.env.BACKEND_BASE_URL || '').replace(/\/$/, '');
-		if (!base) {
-			res.status(500).send('BACKEND_BASE_URL not configured');
-			return;
-		}
-		const upstream = await _fetch(base + '/download-excel');
-		res.status(upstream.status);
-		const ct = upstream.headers.get('content-type');
-		if (ct) {
-			res.setHeader('content-type', ct);
-		}
-		const disp = upstream.headers.get('content-disposition');
-		if (disp) {
-			res.setHeader('content-disposition', disp);
-		}
-		const ab = await upstream.arrayBuffer();
-		res.send(Buffer.from(ab));
-	} catch (err) {
-		res.status(502).send('Proxy error: ' + (err && err.message ? err.message : String(err)));
-	}
+  let client;
+  try {
+    client = await connectToDatabase();
+    const { rows } = await client.query('SELECT * FROM registrations ORDER BY timestamp DESC');
+
+    // Exclude 'id' and format 'events'
+    const data = rows.map(row => {
+      const { id, ...rest } = row;
+      if (rest.events) {
+        try {
+          const eventsArray = JSON.parse(rest.events);
+          rest.events = eventsArray.join(', ');
+        } catch {
+          // Keep as is if not valid JSON
+        }
+      }
+      return rest;
+    });
+
+    const ws = xlsx.utils.json_to_sheet(data);
+    const wb = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(wb, ws, 'Registrations');
+    
+    const buf = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' });
+
+    res.setHeader('Content-Disposition', 'attachment; filename="registrations.xlsx"');
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.send(buf);
+  } catch (e) {
+    console.error('Error generating excel file:', e);
+    res.status(500).send('Failed to generate excel file: ' + e.message);
+  } finally {
+    if (client) {
+      await client.end();
+    }
+  }
 };
 

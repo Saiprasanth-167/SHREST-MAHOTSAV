@@ -58,6 +58,7 @@ app.all('/api/download-excel', wrapHandler(require('./api/download-excel')));
 app.all('/api/registrations/:utr', wrapHandler(require('./api/registrations/[utr]')));
 
 app.get('/live-excel', wrapHandler(require('./api/live-excel')));
+app.get('/download-excel', wrapHandler(require('./api/download-excel')));
 
 // Catch-all route
 app.get('*', (req, res) => {
