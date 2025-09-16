@@ -54,11 +54,11 @@ app.all('/api/upi-qr', wrapHandler(require('./api/upi-qr')));
 app.all('/api/upi-config', wrapHandler(require('./api/upi-config')));
 app.all('/api/validate-utr', wrapHandler(require('./api/validate-utr')));
 app.all('/api/live-excel', wrapHandler(require('./api/live-excel')));
-app.all('/api/download-excel', wrapHandler(require('./api/download-excel')));
+app.all('/api/download-excel', wrapHandler(require('./api/download-excel.js')));
 app.all('/api/registrations/:utr', wrapHandler(require('./api/registrations/[utr]')));
 
 app.get('/live-excel', wrapHandler(require('./api/live-excel')));
-app.get('/download-excel', wrapHandler(require('./api/download-excel')));
+app.get('/download-excel', wrapHandler(require('./api/download-excel.js')));
 
 // Catch-all route
 app.get('*', (req, res) => {

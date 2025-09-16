@@ -36,6 +36,7 @@
       <div class="row"><span class="label">Events:</span> <span class="val" id="d_events"></span></div>
       <div class="row"><span class="label">Timestamp:</span> <span class="val" id="d_ts"></span></div>
     </div>
+    <div class="message" id="scan-message" style="display:none; text-align:center; margin-top:10px; font-weight:600;"></div>
     <div class="actions">
       <button class="back" onclick="window.location.href='home.html'">Back</button>
       <button class="clear" id="clearBtn">Clear</button>
@@ -46,45 +47,51 @@
     const details = document.getElementById('details');
     const reader = new Html5Qrcode("reader");
     const config = { fps: 10, qrbox: { width: 300, height: 300 } };
-
-    // Amount details removed per request
+    const scannedUtrs = new Set();
+    const scanMessage = document.getElementById('scan-message');
 
     function showData(obj) {
-      document.getElementById('d_name').textContent = obj.name || '';
-      document.getElementById('d_regno').textContent = obj.regno || '';
-      document.getElementById('d_campus').textContent = obj.campus || '';
-  document.getElementById('d_year').textContent = obj.year || '';
-      document.getElementById('d_utr').textContent = obj.utr || '';
-      document.getElementById('d_amount').textContent = (obj.amount != null ? obj.amount : '');
-      document.getElementById('d_events').textContent = Array.isArray(obj.events) ? obj.events.join(', ') : (obj.events || '');
-      document.getElementById('d_ts').textContent = obj.ts || '';
+// ...existing code...
       details.style.display = 'block';
+      scanMessage.style.display = 'none';
+    }
+
+    function showMessage(text, isError) {
+        scanMessage.textContent = text;
+        scanMessage.style.color = isError ? '#e53935' : '#1a2980';
+        scanMessage.style.display = 'block';
+        details.style.display = 'none';
     }
 
     function onScanSuccess(decodedText) {
       try {
         const obj = JSON.parse(decodedText);
-        showData(obj);
-        // If amount missing in QR payload, try fetching from backend by UTR
-        if ((obj.amount == null || obj.amount === '' || Number(obj.amount) === 0 || !obj.year) && obj.utr && /^\d{12}$/.test(String(obj.utr))) {
-          fetch('/api/registrations/' + encodeURIComponent(String(obj.utr)))
+        if (!obj.utr) {
+            showMessage('Invalid QR', true);
+            return;
+        }
+
+        if (scannedUtrs.has(obj.utr)) {
+            showMessage('This QR is already scanned', true);
+            return;
+        }
+
+        fetch('/api/registrations/' + encodeURIComponent(String(obj.utr)))
             .then(r => r.json())
             .then(data => {
-              if (data && data.success && data.registration) {
-                const amt = Number(data.registration.amount || 0);
-                if (amt > 0) {
-                  document.getElementById('d_amount').textContent = String(amt);
+                if (data && data.success && data.registration) {
+                    scannedUtrs.add(obj.utr);
+                    showData(data.registration);
+                } else {
+                    showMessage('Invalid QR: Registration not found.', true);
                 }
-                const yr = String(data.registration.year || '');
-                if (yr) {
-                  document.getElementById('d_year').textContent = yr;
-                }
-              }
             })
-            .catch(() => {});
-        }
+            .catch(() => {
+                showMessage('Error validating QR. Please check your connection.', true);
+            });
+
       } catch (e) {
-        alert('Invalid QR content');
+        showMessage('Invalid QR content', true);
       }
     }
 
@@ -92,6 +99,7 @@
 
     document.getElementById('clearBtn').onclick = () => {
       details.style.display = 'none';
+      scanMessage.style.display = 'none';
       ["d_name","d_regno","d_campus","d_year","d_utr","d_amount","d_events","d_ts"].forEach(id => document.getElementById(id).textContent = '');
     };
 

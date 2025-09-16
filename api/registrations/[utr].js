@@ -21,8 +21,20 @@ module.exports = async (req, res) => {
     try {
         client = await connectToDatabase();
 
+        // Handle GET request to fetch a registration
+        if (req.method === 'GET') {
+            if (!utr) {
+                return res.status(400).json({ success: false, message: 'UTR is required.' });
+            }
+            const { rows } = await client.query('SELECT * FROM registrations WHERE utr = $1', [utr]);
+            if (rows.length > 0) {
+                res.json({ success: true, registration: rows[0] });
+            } else {
+                res.status(404).json({ success: false, message: 'Registration not found.' });
+            }
+
         // Handle PUT request to update a registration
-        if (req.method === 'PUT') {
+        } else if (req.method === 'PUT') {
             const data = req.body;
             if (!data || typeof data !== 'object') {
                 return res.status(400).json({ success: false, message: 'Invalid data format.' });
@@ -66,7 +78,7 @@ module.exports = async (req, res) => {
 
         // Handle other methods
         } else {
-            res.setHeader('Allow', ['PUT', 'DELETE']);
+            res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);
             res.status(405).end(`Method ${req.method} Not Allowed`);
         }
     } catch (e) {
