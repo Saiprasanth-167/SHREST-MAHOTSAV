@@ -11,9 +11,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files
-app.use(express.static('.'));
-app.use('/public', express.static('public'));
+// Serve static files from the 'public' directory
+app.use(express.static('public'));
 
 // Routes for HTML pages
 app.get('/', (req, res) => {
@@ -55,7 +54,7 @@ app.all('/api/upi-config', wrapHandler(require('./api/upi-config')));
 app.all('/api/validate-utr', wrapHandler(require('./api/validate-utr')));
 app.all('/api/live-excel', wrapHandler(require('./api/live-excel')));
 app.all('/api/download-excel', wrapHandler(require('./api/download-excel.js')));
-app.all('/api/registrations/:utr', wrapHandler(require('./api/registrations/[utr]')));
+app.all('/api/registrations/:utr', wrapHandler(require('./api/registrations/[utr].js')));
 
 app.get('/live-excel', wrapHandler(require('./api/live-excel')));
 app.get('/download-excel', wrapHandler(require('./api/download-excel.js')));
