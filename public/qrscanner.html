@@ -29,6 +29,7 @@
     <div class="details" id="details" style="display:none;">
       <div class="row"><span class="label">Name:</span> <span class="val" id="d_name"></span></div>
       <div class="row"><span class="label">Reg No:</span> <span class="val" id="d_regno"></span></div>
+      <div class="row"><span class="label">Mobile:</span> <span class="val" id="d_mobile"></span></div>
       <div class="row"><span class="label">Campus:</span> <span class="val" id="d_campus"></span></div>
   <div class="row"><span class="label">Year:</span> <span class="val" id="d_year"></span></div>
       <div class="row"><span class="label">UTR:</span> <span class="val" id="d_utr"></span></div>
@@ -53,7 +54,7 @@
     function showData(obj) {
       document.getElementById('d_name').textContent = obj.name || '';
       document.getElementById('d_regno').textContent = obj.regno || '';
-      document.getElementById('d_mobile').textContent = obj.regno || '';
+      document.getElementById('d_mobile').textContent = obj.mobile || '';
       document.getElementById('d_campus').textContent = obj.campus || '';
       document.getElementById('d_year').textContent = obj.year || '';
       document.getElementById('d_utr').textContent = obj.utr || '';
@@ -119,7 +120,7 @@
     document.getElementById('clearBtn').onclick = () => {
       details.style.display = 'none';
       scanMessage.style.display = 'none';
-      ["d_name","d_regno","d_campus","d_year","d_utr","d_amount","d_events","d_ts"].forEach(id => document.getElementById(id).textContent = '');
+      ["d_name","d_regno","d_mobile","d_campus","d_year","d_utr","d_amount","d_events","d_ts"].forEach(id => document.getElementById(id).textContent = '');
     };
 
   </script>
