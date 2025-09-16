@@ -2,6 +2,7 @@ const _fetch = (globalThis.fetch ? ((...a) => globalThis.fetch(...a)) : require(
 
 module.exports = async (req, res) => {
 	try {
+		console.log('DEBUG BACKEND_BASE_URL:', process.env.BACKEND_BASE_URL);
 		const base = (process.env.BACKEND_BASE_URL || '').replace(/\/$/, '');
 		if (!base) {
 			res.status(500).send('BACKEND_BASE_URL not configured');
