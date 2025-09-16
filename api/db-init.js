@@ -32,6 +32,18 @@ async function initializeDatabase() {
     `;
     await client.query(createTableQuery);
     console.log('Database initialized: "registrations" table checked/created.');
+
+    // Add mobile column if it doesn't exist, for backward compatibility
+    try {
+      await client.query('ALTER TABLE registrations ADD COLUMN mobile VARCHAR(20)');
+      console.log('Added "mobile" column to "registrations" table.');
+    } catch (err) {
+      // Error code '42701' is for 'duplicate column', which we can safely ignore.
+      if (err.code !== '42701') {
+        console.error('Error adding mobile column:', err.message);
+      }
+    }
+
   } catch (err) {
     console.error('Error during database initialization:', err);
     // We throw the error to prevent the server from starting if the DB is not ready.
