@@ -1,4 +1,3 @@
-app.all('/api/upi-qr', wrapHandler(require('./api/upi-qr')));
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -48,6 +47,9 @@ const wrapHandler = (handler) => async (req, res) => {
         }
     }
 };
+
+// UPI QR API route (added after app and wrapHandler are defined)
+app.all('/api/upi-qr', wrapHandler(require('./api/upi-qr')));
 
 app.all('/api/register', wrapHandler(require('./api/register')));
 // Removed: OTP and email endpoints
