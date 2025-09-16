@@ -51,7 +51,26 @@
     const scanMessage = document.getElementById('scan-message');
 
     function showData(obj) {
-// ...existing code...
+      document.getElementById('d_name').textContent = obj.name || '';
+      document.getElementById('d_regno').textContent = obj.regno || '';
+      document.getElementById('d_mobile').textContent = obj.regno || '';
+      document.getElementById('d_campus').textContent = obj.campus || '';
+      document.getElementById('d_year').textContent = obj.year || '';
+      document.getElementById('d_utr').textContent = obj.utr || '';
+      document.getElementById('d_amount').textContent = (obj.amount != null ? obj.amount : '');
+      
+      let eventsText = '';
+      if (obj.events) {
+        try {
+          const eventsArray = JSON.parse(obj.events);
+          eventsText = eventsArray.join(', ');
+        } catch {
+          eventsText = obj.events;
+        }
+      }
+      document.getElementById('d_events').textContent = eventsText;
+      
+      document.getElementById('d_ts').textContent = obj.timestamp || '';
       details.style.display = 'block';
       scanMessage.style.display = 'none';
     }
