@@ -2,10 +2,10 @@ const qr = require('qrcode');
 
 module.exports = async (req, res) => {
   // You can make these dynamic if needed
-  const upiId = "your-upi-id@okphonepe";
-  const name = "SHREST MAHOTSAV";
+  const upiId = "8374466616@ybl";
+  const name = "BOOMIREDDY BALA SIDDHARA REDDY";
   const amount = 100; // You can make this dynamic if needed
-  const note = "Event Registration Fee";
+  const note = "SHREST-MAHOTSAV_2K25 Registration Fee";
 
   // UPI QR format
   const upiString = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
