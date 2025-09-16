@@ -50,7 +50,6 @@ const wrapHandler = (handler) => async (req, res) => {
 
 app.all('/api/register', wrapHandler(require('./api/register')));
 // Removed: OTP and email endpoints
-app.all('/api/upi-qr', wrapHandler(require('./api/upi-qr')));
 app.all('/api/upi-config', wrapHandler(require('./api/upi-config')));
 app.all('/api/validate-utr', wrapHandler(require('./api/validate-utr')));
 app.all('/api/live-excel', wrapHandler(require('./api/live-excel')));
