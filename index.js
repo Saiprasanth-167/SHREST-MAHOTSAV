@@ -57,13 +57,15 @@ app.all('/api/live-excel', wrapHandler(require('./api/live-excel')));
 app.all('/api/download-excel', wrapHandler(require('./api/download-excel')));
 app.all('/api/registrations/:utr', wrapHandler(require('./api/registrations/[utr]')));
 
+app.get('/live-excel', wrapHandler(require('./api/live-excel')));
+
 // Catch-all route
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'home.html'));
 });
 
-// Only start server if not in serverless environment
-if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
+// Only start server if not in a serverless-like environment (this check is now simpler)
+if (process.env.NODE_ENV !== 'test') { // A simple check to avoid running server during tests, for example.
     const initializeDatabase = require('./api/db-init');
     initializeDatabase().then(() => {
         app.listen(PORT, '0.0.0.0', () => {

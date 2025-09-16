@@ -15,7 +15,7 @@ async function connectToDatabase() {
 
 // Main handler for the serverless function
 module.exports = async (req, res) => {
-    const { utr } = req.query; // Vercel uses req.query for dynamic routes
+    const { utr } = req.params; // Using Express req.params for dynamic routes
     let client;
 
     try {
