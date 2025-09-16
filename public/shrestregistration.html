@@ -296,7 +296,6 @@
 
 	<!-- Footer mini contact button (tap-to-call) -->
 	<a class="mini-contact-btn" id="miniContactFooter" href="tel:+918374466616">Contact for payment issues</a>
-
 	<script>
 		// Fee display logic for registration page (kept independent from form controls)
 		(function(){
@@ -718,6 +717,7 @@
 						if (year === '1') secs = ['A', 'B'];
 					} else if (branch === 'ECE') {
 						if (year === '1') secs = ['A', 'B'];
+						else if (year === '2' || year === '3' || year === '4') secs = ['A', 'B'];
 					}
 					setSections(secs);
 				} else {
