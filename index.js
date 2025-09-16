@@ -1,4 +1,3 @@
-app.all('/api/upi-config', wrapHandler(require('./api/upi-config')));
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -54,6 +53,7 @@ app.all('/api/register', wrapHandler(require('./api/register')));
 app.all('/api/live-excel', wrapHandler(require('./api/live-excel')));
 app.all('/api/download-excel', wrapHandler(require('./api/download-excel')));
 app.all('/api/registrations/:utr', wrapHandler(require('./api/registrations/[utr]')));
+app.all('/api/upi-config', wrapHandler(require('./api/upi-config')));
 
 app.get('/live-excel', wrapHandler(require('./api/live-excel')));
 app.get('/download-excel', wrapHandler(require('./api/download-excel')));
