@@ -221,6 +221,10 @@
 				<div class="error" id="regno-error"></div>
 			</div>
 			<div class="form-group">
+				<label for="mobile">Mobile Number</label>
+				<input type="tel" id="mobile" required pattern="[0-9]{10}" placeholder="Enter 10-digit mobile number">
+			</div>
+			<div class="form-group">
 				<label for="course">Course</label>
 				<select id="course" name="course" required>
 					<option value="">Select Course</option>
@@ -237,6 +241,7 @@
 					<option value="CSE(AI&ML)">CSE(AI&ML)</option>
 					<option value="CIVIL">CIVIL</option>
 					<option value="MECHANICAL">MECHANICAL</option>
+					<option value="ECE">ECE</option>
 				</select>
 			</div>
 			<div class="form-group" id="degree-type-group" style="display:none;">
@@ -670,6 +675,22 @@
 			const degreeOtherEl = document.getElementById('degree-other');
 			const sectionGroup = document.getElementById('section-group');
 			const sectionEl = document.getElementById('section');
+			const branchSelect = document.getElementById('branch');
+			const sectionSelect = document.getElementById('section');
+
+			const branchSections = {
+				'CSE': 10,
+				'CSM': 4,
+				'CSD': 4,
+				'IT': 4,
+				'ECE': 2,
+				'CIVIL': 2,
+				'MECH': 2,
+				'EEE': 2,
+				'AIML': 2,
+				'CS': 2,
+				'DS': 2
+			};
 
 			function populateYears(n) {
 				yearEl.innerHTML = '<option value="">Select Year</option>';
@@ -695,11 +716,30 @@
 						else if (year === '2' || year === '3' || year === '4') secs = ['A', 'B', 'C'];
 					} else if (branch === 'CSE(AI&ML)') {
 						if (year === '1') secs = ['A', 'B'];
+					} else if (branch === 'ECE') {
+						if (year === '1') secs = ['A', 'B'];
 					}
 					setSections(secs);
 				} else {
 					setSections([]);
 				}
+			}
+
+			function populateBranches() {
+				const course = document.getElementById('course').value;
+				const year = document.getElementById('year').value;
+				branchSelect.innerHTML = '<option value="">Select Branch</option>';
+
+				let branches = [];
+				if (course === 'B.Tech') {
+					branches = ['CSE', 'CSM', 'CSD', 'IT', 'ECE', 'CIVIL', 'MECH', 'EEE', 'AIML', 'CS', 'DS'];
+				} else if (course === 'DEGREE') {
+					branches = ['BBA', 'B.Com', 'B.Sc'];
+				}
+
+				branches.forEach(b => {
+					branchSelect.innerHTML += `<option value="${b}">${b}</option>`;
+				});
 			}
 
 			courseEl.addEventListener('change', function() {
@@ -726,6 +766,7 @@
 					yearEl.innerHTML = '<option value="">Select Year</option>';
 				}
 				updateSections();
+				populateBranches();
 			});
 
 			degreeTypeEl.addEventListener('change', function() {
@@ -756,6 +797,7 @@
 			const regData = {
 				name: document.getElementById('name').value.trim(),
 				regno: document.getElementById('regno').value.trim(),
+				mobile: document.getElementById('mobile').value.trim(),
 				course: selectedCourse,
 				branch: (function(){
 					if (selectedCourse === 'B.Tech') return (document.getElementById('branch-btech').value || '');
