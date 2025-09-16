@@ -1,4 +1,1 @@
-- [x] Update public/shrestregistration.html: Change window.location.href = 'events.html' to '/events'
-- [x] Update public/events.html: Change window.location.href = 'shrestregistration.html' to '/shrestregistration'
-- [x] Update public/events.html: Change 'celebration.html?qr=' to '/celebration?qr='
-- [ ] Test the registration flow by running the server
+- [x] Edit public/events.html to change the redirect URL on submit success to 'celebration.html'

@@ -12,3 +12,5 @@ services:
         value: production
       - key: RENDER
         value: true
+      - key: BACKEND_BASE_URL
+        value: "https://shrest-mahotsav.onrender.com"

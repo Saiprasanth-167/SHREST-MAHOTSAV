@@ -10,9 +10,13 @@ module.exports = async (req, res) => {
 		const upstream = await _fetch(base + '/download-excel');
 		res.status(upstream.status);
 		const ct = upstream.headers.get('content-type');
-		if (ct) res.setHeader('content-type', ct);
+		if (ct) {
+			res.setHeader('content-type', ct);
+		}
 		const disp = upstream.headers.get('content-disposition');
-		if (disp) res.setHeader('content-disposition', disp);
+		if (disp) {
+			res.setHeader('content-disposition', disp);
+		}
 		const ab = await upstream.arrayBuffer();
 		res.send(Buffer.from(ab));
 	} catch (err) {

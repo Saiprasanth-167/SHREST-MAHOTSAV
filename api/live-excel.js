@@ -65,10 +65,12 @@ module.exports = async (req, res) => {
           .save { background-color: #28a745; color: white; }
           .cancel { background-color: #dc3545; color: white; }
           .delete { background-color: #f44336; color: white; }
+          .download { background-color: #008CBA; color: white; position: absolute; top: 20px; right: 20px; text-decoration: none; padding: 10px 15px;}
         </style>
       </head>
       <body>
         <h1>Live Registration Data</h1>
+        <a href="/api/download-excel" class="download">Download Excel</a>
         <table>
           <thead><tr>${htmlHead}</tr></thead>
           <tbody>${htmlRows}</tbody>
