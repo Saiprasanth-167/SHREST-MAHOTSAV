@@ -517,150 +517,135 @@
 		})();
 
 		// UTR validation
-		document.getElementById('utr-validate').onclick = function() {
-			const utr = document.getElementById('utr').value.trim();
-			const screenshot = document.getElementById('screenshot').files[0];
-			const errorDiv = document.getElementById('utr-error');
-			const loadingDiv = document.getElementById('utr-loading');
-			const emojiDiv = document.getElementById('utr-emoji');
-			// expected fee from earlier panel (stored by fee widget)
-			const expectedFee = Number(localStorage.getItem('shrest.fee') || 0);
-			// success/proceed elements removed per request
-			errorDiv.textContent = '';
-			loadingDiv.style.display = 'none';
-			emojiDiv.style.display = 'none';
-			// removed success visibility controls
-			if (!/^\d{12}$/.test(utr)) {
-				errorDiv.textContent = 'Enter a valid 12-digit UTR number.';
-				return;
-			}
-			if (!screenshot) {
-				errorDiv.textContent = 'Please upload the payment screenshot.';
-				return;
-			}
-			if (!expectedFee || isNaN(expectedFee)) {
-				errorDiv.textContent = 'Please select your Course and Year above to compute the fee before validating UTR.';
-				return;
-			}
-			loadingDiv.style.display = 'block';
-			document.getElementById('utr-validate').disabled = true;
-			// Use Tesseract.js to extract text from image and check for UTR
-			Tesseract.recognize(
-				screenshot,
-				'eng',
-				{ logger: m => { /* Optionally log progress */ } }
-			).then(async ({ data: { text } }) => {
-				loadingDiv.style.display = 'none';
-				document.getElementById('utr-validate').disabled = false;
-				// Basic text normalization
-				const ocrText = (text || '').replace(/\s+/g,' ').trim();
-				const upper = ocrText.toUpperCase();
-				// Build "receipt-like" checks using common keywords from examples
-				const successKeywords = [
-					/\bPAID\b/, /PAYMENT\s+SUCCESSFUL/, /TRANSACTION\s+SUCCESSFUL/, /SUCCESSFUL\b/, /COMPLETED\b/
-				];
-				const hasSuccess = successKeywords.some(rx => rx.test(upper));
-				const hasUpi = /\bUPI\b|@[A-Z0-9]{2,10}\b/.test(upper);
-				// Accept typical VPA suffixes like @YBL, @OKAXIS, @OKSBI, etc.
-				const vpaLike = /@[A-Z]{2,10}\b/.test(upper);
-				// Receiver name check (must match exactly in text)
-				const expectedReceiver = 'BOOMIREDDY BALA SIDDHARA REDDY';
-				const hasReceiver = upper.includes(expectedReceiver);
-				// Amount checks: ₹100, Rs 100, INR 100, and with decimals like 100.00
-				const amt = String(expectedFee);
-				const amtRxList = [
-					new RegExp('(?:₹|RS\\.?\\s*|INR\\s*)' + amt.replace(/[-/\\^$*+?.()|[\]{}]/g,'\\$&') + '(?:\\.00|\\.0)?\\b','i'),
-					new RegExp('\\b' + amt.replace(/[-/\\^$*+?.()|[\]{}]/g,'\\$&') + '(?:\\.00|\\.0)?\\b','i')
-				];
-				const hasAmount = amtRxList.some(rx => rx.test(ocrText));
-				const hasUtr = ocrText.includes(utr);
+<!-- Remove receiver name mismatch logic from UTR validation -->
+    document.getElementById('utr-validate').onclick = function() {
+        const utr = document.getElementById('utr').value.trim();
+        const screenshot = document.getElementById('screenshot').files[0];
+        const errorDiv = document.getElementById('utr-error');
+        const loadingDiv = document.getElementById('utr-loading');
+        const emojiDiv = document.getElementById('utr-emoji');
+        const expectedFee = Number(localStorage.getItem('shrest.fee') || 0);
 
-				// If receipt-like + amount but receiver name is not expected, reject immediately
-				if ((hasSuccess || hasUpi || vpaLike) && hasAmount && !hasReceiver) {
-					errorDiv.textContent = `Receiver name mismatch. Expected: ${expectedReceiver}.`;
-					return;
-				}
+        errorDiv.textContent = '';
+        loadingDiv.style.display = 'none';
+        emojiDiv.style.display = 'none';
 
-				if (hasAmount && (hasSuccess || hasUpi || vpaLike) && hasReceiver && !hasUtr) {
-					// Screenshot looks like a valid receipt, but UTR in image doesn't match input
-					errorDiv.textContent = 'this is correct screenshot but the utr no. is not matching';
-					return;
-				}
+        if (!/^\d{12}$/.test(utr)) {
+            errorDiv.textContent = 'Enter a valid 12-digit UTR number.';
+            return;
+        }
+        if (!screenshot) {
+            errorDiv.textContent = 'Please upload the payment screenshot.';
+            return;
+        }
+        if (!expectedFee || isNaN(expectedFee)) {
+            errorDiv.textContent = 'Please select your Course and Year above to compute the fee before validating UTR.';
+            return;
+        }
+        loadingDiv.style.display = 'block';
+        document.getElementById('utr-validate').disabled = true;
 
-				if (hasUtr && hasAmount && (hasSuccess || hasUpi || vpaLike) && hasReceiver) {
-					// Check duplicate UTR with backend
-					try {
-						const resp = await fetch('/api/validate-utr', {
-							method: 'POST',
-							headers: { 'Content-Type': 'application/json' },
-							body: JSON.stringify({ utr })
-						});
-						const data = await resp.json();
-						if (!data.valid) {
-							errorDiv.textContent = data.message || 'Invalid UTR number.';
-							return;
-						}
-						if (data.duplicate) {
-							errorDiv.textContent = 'This UTR has already been used.';
-							emojiDiv.style.display = 'block';
-							return;
-						}
-						// Show success below QR, then auto-advance shortly
-						errorDiv.textContent = '';
-						document.getElementById('utr-hidden').value = utr;
-						const feeSuccess = document.getElementById('feePaymentSuccess');
-						const prefillCourseYearFromFee = () => {
-							try {
-								const savedCourse = localStorage.getItem('shrest.course');
-								const savedYear = localStorage.getItem('shrest.year');
-								const courseEl = document.getElementById('course');
-								const yearEl = document.getElementById('year');
-								if (savedCourse && courseEl) {
-									courseEl.value = savedCourse;
-									courseEl.dispatchEvent(new Event('change'));
-									courseEl.disabled = true; // lock from edits
-								}
-								if (savedYear && yearEl) {
-									yearEl.value = savedYear;
-									yearEl.disabled = true; // lock from edits
-								}
-							} catch (_) {}
-						};
-						if (feeSuccess) {
-							feeSuccess.style.display = 'block';
-							setTimeout(() => {
-								const feePanel = document.getElementById('feePanel');
-								if (feePanel) feePanel.style.display = 'none';
-								prefillCourseYearFromFee();
-								document.getElementById('utr-section').classList.add('hidden');
-								document.getElementById('registration-form').classList.remove('hidden');
-							}, 900);
-						} else {
-							const feePanel = document.getElementById('feePanel');
-							if (feePanel) feePanel.style.display = 'none';
-							prefillCourseYearFromFee();
-							document.getElementById('utr-section').classList.add('hidden');
-							document.getElementById('registration-form').classList.remove('hidden');
-						}
-						// Store screenshot in hidden input as base64 (for demo, not secure for real use)
-						const reader = new FileReader();
-						reader.onload = function(e) {
-							document.getElementById('screenshot-hidden').value = e.target.result;
-						};
-						reader.readAsDataURL(screenshot);
-					} catch (dupErr) {
-						errorDiv.textContent = 'Network error validating UTR.';
-					}
-				} else {
-					errorDiv.textContent = `Screenshot does not look like a valid UPI success receipt for Rs ${expectedFee}. Check whether UTR number / amount / banking name are correct in the image.`;
-				}
-			}).catch(() => {
-				loadingDiv.style.display = 'none';
-				document.getElementById('utr-validate').disabled = false;
-				errorDiv.textContent = 'Failed to process the screenshot. Please try a clearer image.';
-			});
-		};
+        Tesseract.recognize(
+            screenshot,
+            'eng',
+            { logger: m => { /* Optionally log progress */ } }
+        ).then(async ({ data: { text } }) => {
+            loadingDiv.style.display = 'none';
+            document.getElementById('utr-validate').disabled = false;
+            const ocrText = (text || '').replace(/\s+/g,' ').trim();
+            const upper = ocrText.toUpperCase();
 
+            // Receipt-like checks
+            const successKeywords = [
+                /\bPAID\b/, /PAYMENT\s+SUCCESSFUL/, /TRANSACTION\s+SUCCESSFUL/, /SUCCESSFUL\b/, /COMPLETED\b/
+            ];
+            const hasSuccess = successKeywords.some(rx => rx.test(upper));
+            const hasUpi = /\bUPI\b|@[A-Z0-9]{2,10}\b/.test(upper);
+            const vpaLike = /@[A-Z]{2,10}\b/.test(upper);
+            // Amount checks
+            const amt = String(expectedFee);
+            const amtRxList = [
+                new RegExp('(?:₹|RS\\.?\\s*|INR\\s*)' + amt.replace(/[-/\\^$*+?.()|[\]{}]/g,'\\$&') + '(?:\\.00|\\.0)?\\b','i'),
+                new RegExp('\\b' + amt.replace(/[-/\\^$*+?.()|[\]{}]/g,'\\$&') + '(?:\\.00|\\.0)?\\b','i')
+            ];
+            const hasAmount = amtRxList.some(rx => rx.test(ocrText));
+            const hasUtr = ocrText.includes(utr);
+
+            // *** Receiver name check removed ***
+            // Do NOT check for receiver name in the screenshot
+
+            // Validate screenshot only by UTR, amount, and receipt-like keywords
+            if (hasAmount && (hasSuccess || hasUpi || vpaLike) && hasUtr) {
+                // Check duplicate UTR with backend
+                try {
+                    const resp = await fetch('/api/validate-utr', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ utr })
+                    });
+                    const data = await resp.json();
+                    if (!data.valid) {
+                        errorDiv.textContent = data.message || 'Invalid UTR number.';
+                        return;
+                    }
+                    if (data.duplicate) {
+                        errorDiv.textContent = 'This UTR has already been used.';
+                        emojiDiv.style.display = 'block';
+                        return;
+                    }
+                    errorDiv.textContent = '';
+                    document.getElementById('utr-hidden').value = utr;
+                    const feeSuccess = document.getElementById('feePaymentSuccess');
+                    const prefillCourseYearFromFee = () => {
+                        try {
+                            const savedCourse = localStorage.getItem('shrest.course');
+                            const savedYear = localStorage.getItem('shrest.year');
+                            const courseEl = document.getElementById('course');
+                            const yearEl = document.getElementById('year');
+                            if (savedCourse && courseEl) {
+                                courseEl.value = savedCourse;
+                                courseEl.dispatchEvent(new Event('change'));
+                                courseEl.disabled = true;
+                            }
+                            if (savedYear && yearEl) {
+                                yearEl.value = savedYear;
+                                yearEl.disabled = true;
+                            }
+                        } catch (_) {}
+                    };
+                    if (feeSuccess) {
+                        feeSuccess.style.display = 'block';
+                        setTimeout(() => {
+                            const feePanel = document.getElementById('feePanel');
+                            if (feePanel) feePanel.style.display = 'none';
+                            prefillCourseYearFromFee();
+                            document.getElementById('utr-section').classList.add('hidden');
+                            document.getElementById('registration-form').classList.remove('hidden');
+                        }, 900);
+                    } else {
+                        const feePanel = document.getElementById('feePanel');
+                        if (feePanel) feePanel.style.display = 'none';
+                        prefillCourseYearFromFee();
+                        document.getElementById('utr-section').classList.add('hidden');
+                        document.getElementById('registration-form').classList.remove('hidden');
+                    }
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('screenshot-hidden').value = e.target.result;
+                    };
+                    reader.readAsDataURL(screenshot);
+                } catch (dupErr) {
+                    errorDiv.textContent = 'Network error validating UTR.';
+                }
+            } else {
+                errorDiv.textContent = `Screenshot does not look like a valid UPI success receipt for Rs ${expectedFee}. Check whether UTR number / amount are correct in the image.`;
+            }
+        }).catch(() => {
+            loadingDiv.style.display = 'none';
+            document.getElementById('utr-validate').disabled = false;
+            errorDiv.textContent = 'Failed to process the screenshot. Please try a clearer image.';
+        });
+	};
 		// Dynamic course/branch/year/section logic
 		(function() {
 			const courseEl = document.getElementById('course');
