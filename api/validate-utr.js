@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
     const { rows } = await client.query('SELECT * FROM registrations WHERE utr = $1', [utr]);
       if (rows.length > 0) { 
         // UTR exists, so it's invalid for new registration
-        return res.json({ valid: false, message: 'THIS UTR IS INVALID' });
+        return res.json({ valid: false, message: 'THIS UTR IS INVALID 😠' });
     } else {
         // UTR not found, so it's valid for registration
         return res.json({ valid: true, message: 'UTR is valid' });

@@ -3,8 +3,8 @@ const qr = require('qrcode');
 
 module.exports = async (req, res) => {
   // Get dynamic params from query
-  const upiId = req.query.pa || "8374466616@ybl";
-  const name = req.query.pn || "BOOMIREDDY BALA SIDDHARA REDDY";
+  const upiId = req.query.pa || "6305369920@ybl";
+  const name = req.query.pn || "TATA ANANTHA VENKATA";
   const amount = req.query.am || 100;
   const note = req.query.tn || "SHREST-MAHOTSAV_2K25 Registration Fee";
   const txnRef = req.query.tr || "SHREST" + Date.now();

@@ -2,8 +2,8 @@
 module.exports = async (req, res) => {
   // Return fields as expected by frontend
   const upiDetails = {
-    pa: "8374466616@ybl", // UPI ID
-    pn: "BOOMIREDDY BALA SIDDHARA REDDY", // Name
+    pa: "6305369920@ybl", // UPI ID
+    pn: "TATA ANANTHA VENKATA", // Name
     amount: 100, // You can make this dynamic if needed
     note: "SHREST-MAHOTSAV_2K25 Registration Fee"
   };
