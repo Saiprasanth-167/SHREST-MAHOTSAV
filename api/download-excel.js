@@ -17,18 +17,33 @@ module.exports = async (req, res) => {
     const { rows } = await client.query('SELECT * FROM registrations ORDER BY timestamp DESC');
 
     // Exclude 'id' and format 'events'
-    const data = rows.map(row => {
-      const { id, ...rest } = row;
-      if (rest.events) {
-        try {
-          const eventsArray = JSON.parse(rest.events);
-          rest.events = eventsArray.join(', ');
-        } catch {
-          // Keep as is if not valid JSON
+      const data = rows.map(row => {
+        const { id, ...rest } = row;
+        if (rest.events) {
+          let eventsValue = rest.events;
+          // Try to parse as JSON array
+          try {
+            const eventsArray = JSON.parse(eventsValue);
+            if (Array.isArray(eventsArray)) {
+              rest.events = eventsArray.join(', ');
+            } else {
+              rest.events = String(eventsValue);
+            }
+          } catch {
+            // If not JSON, check if it's a comma-separated string
+            if (typeof eventsValue === 'string' && eventsValue.includes(',')) {
+              rest.events = eventsValue;
+            } else if (typeof eventsValue === 'string' && eventsValue.trim() !== '') {
+              rest.events = eventsValue;
+            } else {
+              rest.events = '';
+            }
+          }
+        } else {
+          rest.events = '';
         }
-      }
-      return rest;
-    });
+        return rest;
+      });
 
     const ws = xlsx.utils.json_to_sheet(data);
     const wb = xlsx.utils.book_new();
