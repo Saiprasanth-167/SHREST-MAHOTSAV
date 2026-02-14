@@ -39,7 +39,9 @@ app.get('/celebration', (req, res) => {
 // API Routes - Wrapper function for serverless functions
 const wrapHandler = (handler) => async (req, res) => {
     try {
-        await handler(req, res);
+        // If the handler is an ES module or CommonJS module with default export
+        const fn = handler.default || handler;
+        await fn(req, res);
     } catch (error) {
         console.error('API Error:', error);
         if (!res.headersSent) {
@@ -48,10 +50,16 @@ const wrapHandler = (handler) => async (req, res) => {
     }
 };
 
-// UPI QR API route (added after app and wrapHandler are defined)
-// API routes are now handled by Vercel serverless functions in api/ folder
+// Explicit routes for Excel functionality to prevent falling back to home page
+app.get('/live-excel', wrapHandler(require('./api/live-excel')));
+app.get('/download-excel', wrapHandler(require('./api/download-excel')));
 
-// Removed: OTP and email endpoints
+// Make API endpoints explicitly available through Express too, for robustness
+app.all('/api/live-excel', wrapHandler(require('./api/live-excel')));
+app.all('/api/download-excel', wrapHandler(require('./api/download-excel')));
+app.all('/api/register', wrapHandler(require('./api/register')));
+app.all('/api/validate-utr', wrapHandler(require('./api/validate-utr')));
+app.all('/api/registrations/:utr', wrapHandler(require('./api/registrations/[utr]')));
 
 // Catch-all route
 app.get('*', (req, res) => {
