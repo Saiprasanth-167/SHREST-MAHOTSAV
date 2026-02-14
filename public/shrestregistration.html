@@ -703,12 +703,26 @@
                 try {
                     const resp = await fetch('/api/validate-utr', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
                         body: JSON.stringify({ utr })
                     });
+                    
+                    if (!resp.ok) {
+                        console.error('UTR validation HTTP error:', resp.status, resp.statusText);
+                        throw new Error(`Server returned ${resp.status}: ${resp.statusText}`);
+                    }
+                    
                     const data = await resp.json();
+                    console.log('UTR validation response:', data);
+                    
                     if (!data.valid) {
                         errorDiv.textContent = data.message || 'Invalid UTR number.';
+                        if (data.message && data.message.includes('😠')) {
+                            emojiDiv.style.display = 'block';
+                        }
                         return;
                     }
                     if (data.duplicate) {
@@ -758,7 +772,9 @@
                     };
                     reader.readAsDataURL(screenshot);
                 } catch (dupErr) {
-                    errorDiv.textContent = 'Network error validating UTR.';
+                    console.error('UTR validation network error:', dupErr);
+                    errorDiv.textContent = 'Network error validating UTR. Please check your connection and try again. If the problem persists, contact support.';
+                    errorDiv.innerHTML += '<br><small>Error: ' + (dupErr.message || 'Unknown error') + '</small>';
                 }
             } else {
                 // Provide detailed feedback about what's missing
