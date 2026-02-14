@@ -3,9 +3,6 @@ const xlsx = require('xlsx');
 const initializeDatabase = require('./db-init');
 
 async function connectToDatabase() {
-  if (!process.env.DATABASE_URL) {
-    throw new Error('DATABASE_URL environment variable is not set');
-  }
   const client = new Client({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
@@ -33,22 +30,14 @@ module.exports = async (req, res) => {
       // Format events column
       if (rest.events) {
         let eventsValue = rest.events;
-        // If events is already an object/array (due to JSONB), use it directly
-        // Otherwise try to parse it if it's a string
-        let eventsArray = eventsValue;
-        
-        if (typeof eventsValue === 'string') {
-          try {
-            eventsArray = JSON.parse(eventsValue);
-          } catch (e) {
-            // treat as simple string
-            eventsArray = eventsValue;
+        try {
+          const eventsArray = JSON.parse(eventsValue);
+          if (Array.isArray(eventsArray)) {
+            rest.events = eventsArray.join(', ');
+          } else {
+            rest.events = String(eventsValue);
           }
-        }
-
-        if (Array.isArray(eventsArray)) {
-          rest.events = eventsArray.join(', ');
-        } else {
+        } catch {
           rest.events = String(eventsValue);
         }
       } else {

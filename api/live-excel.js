@@ -2,9 +2,6 @@ const { Client } = require('pg');
 const initializeDatabase = require('./db-init');
 
 async function connectToDatabase() {
-  if (!process.env.DATABASE_URL) {
-    throw new Error('DATABASE_URL environment variable is not set');
-  }
   const client = new Client({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
@@ -14,18 +11,15 @@ async function connectToDatabase() {
 }
 
 module.exports = async (req, res) => {
-  // Allow both GET and HEAD requests (Vercel sometimes checks HEAD)
-  if (req.method !== 'GET' && req.method !== 'HEAD') {
+  if (req.method !== 'GET') {
     return res.status(405).send('Method Not Allowed');
   }
 
   try {
-    // Ensure DB is ready
     await initializeDatabase();
   } catch (error) {
     console.error('Database initialization failed:', error);
-    // Return HTML error page instead of JSON to avoid confusion
-    return res.status(500).send(`<html><body><h1>Database Error</h1><p>${error.message}</p></body></html>`);
+    return res.status(500).send('Database initialization failed.');
   }
   
   let client;
@@ -42,20 +36,11 @@ module.exports = async (req, res) => {
         const cells = headers.map(h => {
           let val = r[h];
           if (h === 'events' && val) {
-            let eventsArray = val;
-            if (typeof val === 'string') {
-              try {
-                eventsArray = JSON.parse(val);
-              } catch (e) {
-                // Not valid JSON string, use original value
-                eventsArray = val;
-              }
-            }
-            
-            if (Array.isArray(eventsArray)) {
+            try {
+              const eventsArray = JSON.parse(val);
               val = eventsArray.join(', ');
-            } else if (typeof eventsArray === 'object' && eventsArray !== null) {
-              val = JSON.stringify(eventsArray);
+            } catch {
+              // val remains as is if not valid JSON
             }
           }
           val = String(val ?? '');

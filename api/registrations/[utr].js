@@ -1,11 +1,8 @@
 const { Client } = require('pg');
-const initializeDatabase = require('../db-init');
+const initializeDatabase = require('./db-init');
 
 // Function to connect to the database
 async function connectToDatabase() {
-    if (!process.env.DATABASE_URL) {
-        throw new Error('DATABASE_URL environment variable is not set');
-    }
     const client = new Client({
         connectionString: process.env.DATABASE_URL,
         ssl: {
