@@ -14,15 +14,18 @@ async function connectToDatabase() {
 }
 
 module.exports = async (req, res) => {
-  if (req.method !== 'GET') {
+  // Allow both GET and HEAD requests (Vercel sometimes checks HEAD)
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
     return res.status(405).send('Method Not Allowed');
   }
 
   try {
+    // Ensure DB is ready
     await initializeDatabase();
   } catch (error) {
     console.error('Database initialization failed:', error);
-    return res.status(500).send('Database initialization failed.');
+    // Return HTML error page instead of JSON to avoid confusion
+    return res.status(500).send(`<html><body><h1>Database Error</h1><p>${error.message}</p></body></html>`);
   }
   
   let client;

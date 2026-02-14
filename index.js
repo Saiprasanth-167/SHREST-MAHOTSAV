@@ -11,14 +11,26 @@ app.use(cors());
 app.use(express.json({limit: '10mb'}));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Serve static files
-app.use(express.static('.'));
+// Serve static files - AFTER API routes to prevent shadowing
+// app.use(express.static('.')); // This is dangerous as it exposes backend code
 app.use('/public', express.static('public'));
 
 // Routes for HTML pages
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'home.html'));
 });
+
+// Route definitions with higher priority
+const liveExcelHandler = require('./api/live-excel');
+app.get('/live-excel', wrapHandler(liveExcelHandler.default || liveExcelHandler));
+
+const downloadExcelHandler = require('./api/download-excel');
+app.get('/download-excel', wrapHandler(downloadExcelHandler.default || downloadExcelHandler));
+
+// Explicit route for API access as well (if needed by frontend JS)
+app.all('/api/live-excel', wrapHandler(liveExcelHandler.default || liveExcelHandler));
+app.all('/api/download-excel', wrapHandler(downloadExcelHandler.default || downloadExcelHandler));
+
 
 app.get('/shrestregistration', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'shrestregistration.html'));
@@ -35,24 +47,6 @@ app.get('/qrscanner', (req, res) => {
 app.get('/celebration', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'celebration.html'));
 });
-
-// API Routes - Wrapper function for serverless functions
-const wrapHandler = (handler) => async (req, res) => {
-    try {
-        // If the handler is an ES module or CommonJS module with default export
-        const fn = handler.default || handler;
-        await fn(req, res);
-    } catch (error) {
-        console.error('API Error:', error);
-        if (!res.headersSent) {
-            res.status(500).json({ error: 'Internal server error' });
-        }
-    }
-};
-
-// Explicit routes for Excel functionality to prevent falling back to home page
-app.get('/live-excel', wrapHandler(require('./api/live-excel')));
-app.get('/download-excel', wrapHandler(require('./api/download-excel')));
 
 // Make API endpoints explicitly available through Express too, for robustness
 app.all('/api/live-excel', wrapHandler(require('./api/live-excel')));
