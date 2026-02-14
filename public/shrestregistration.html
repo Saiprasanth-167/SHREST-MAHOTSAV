@@ -646,25 +646,56 @@
             document.getElementById('utr-validate').disabled = false;
             const ocrText = (text || '').replace(/\s+/g,' ').trim();
             const upper = ocrText.toUpperCase();
+            
+            console.log('OCR Text:', ocrText);
+            console.log('UTR to find:', utr);
+            console.log('Expected fee:', expectedFee);
 
             // Receipt-like checks
             const successKeywords = [
-                /\bPAID\b/, /PAYMENT\s+SUCCESSFUL/, /TRANSACTION\s+SUCCESSFUL/, /SUCCESSFUL\b/, /COMPLETED\b/
+                /\bPAID\b/, /PAYMENT\s+SUCCESSFUL/, /TRANSACTION\s+SUCCESSFUL/, /SUCCESSFUL\b/, 
+                /COMPLETED\b/, /\bSUCCESS\b/, /DONE\b/, /CREDITED\b/
             ];
             const hasSuccess = successKeywords.some(rx => rx.test(upper));
             const hasUpi = /\bUPI\b|@[A-Z0-9]{2,10}\b/.test(upper);
             const vpaLike = /@[A-Z]{2,10}\b/.test(upper);
-            // Amount checks
+            
+            // Amount checks - improved with multiple patterns and tolerance
             const amt = String(expectedFee);
-            const amtRxList = [
-                new RegExp('(?:₹|RS\\.?\\s*|INR\\s*)' + amt.replace(/[-/\\^$*+?.()|[\]{}]/g,'\\$&') + '(?:\\.00|\\.0)?\\b','i'),
-                new RegExp('\\b' + amt.replace(/[-/\\^$*+?.()|[\]{}]/g,'\\$&') + '(?:\\.00|\\.0)?\\b','i')
+            const normalizedText = ocrText.replace(/[,\s]/g, ''); // Remove commas and spaces
+            const normalizedUpper = upper.replace(/[,\s]/g, '');
+            
+            // Check for exact amount and ±5 rupee tolerance for OCR errors
+            const amtPatterns = [
+                new RegExp('(?:₹|RS\\.?|INR)?' + amt + '(?:\\.00?)?', 'i'),
+                new RegExp('\\b' + amt + '(?:\\.00?)?\\b', 'i'),
+                new RegExp('(?:₹|RS\\.?|INR)?' + amt, 'i')
             ];
-            const hasAmount = amtRxList.some(rx => rx.test(ocrText));
-            const hasUtr = ocrText.includes(utr);
-
-            // *** Receiver name check removed ***
-            // Do NOT check for receiver name in the screenshot
+            
+            let hasAmount = amtPatterns.some(rx => rx.test(normalizedText) || rx.test(normalizedUpper));
+            
+            // Check with tolerance (±5 rupees)
+            if (!hasAmount && expectedFee > 0) {
+                for (let tolerance = 1; tolerance <= 5; tolerance++) {
+                    const amtLow = expectedFee - tolerance;
+                    const amtHigh = expectedFee + tolerance;
+                    if (normalizedText.includes(String(amtLow)) || normalizedText.includes(String(amtHigh))) {
+                        hasAmount = true;
+                        console.log(`Amount found with tolerance: ${tolerance} rupees`);
+                        break;
+                    }
+                }
+            }
+            
+            // UTR checks - more flexible
+            const utrDigits = utr.replace(/\D/g, ''); // Extract just digits
+            const hasUtr = ocrText.includes(utr) || 
+                          normalizedText.includes(utr) ||
+                          upper.includes(utr) ||
+                          // Check for UTR with spaces or formatting
+                          new RegExp(utrDigits.split('').join('[\\s-]*'), 'i').test(ocrText);
+            
+            console.log('Validation results:', { hasAmount, hasSuccess, hasUpi, vpaLike, hasUtr });
 
             // Validate screenshot only by UTR, amount, and receipt-like keywords
             if (hasAmount && (hasSuccess || hasUpi || vpaLike) && hasUtr) {
@@ -730,9 +761,21 @@
                     errorDiv.textContent = 'Network error validating UTR.';
                 }
             } else {
-                errorDiv.textContent = `Screenshot does not look like a valid UPI success receipt for Rs ${expectedFee}. Check whether UTR number / amount are correct in the image.`;
+                // Provide detailed feedback about what's missing
+                const missing = [];
+                if (!hasAmount) missing.push('amount (Rs ' + expectedFee + ')');
+                if (!hasUtr) missing.push('UTR number (' + utr + ')');
+                if (!hasSuccess && !hasUpi && !vpaLike) missing.push('success confirmation or UPI indicator');
+                
+                if (missing.length > 0) {
+                    errorDiv.textContent = `Screenshot validation failed. Missing: ${missing.join(', ')}. Please upload a clear screenshot of the payment success page.`;
+                } else {
+                    errorDiv.textContent = `Screenshot does not look like a valid UPI success receipt for Rs ${expectedFee}. Check whether UTR number / amount are correct in the image.`;
+                }
+                console.error('Validation failed:', { hasAmount, hasUtr, hasSuccess, hasUpi, vpaLike, missing });
             }
-        }).catch(() => {
+        }).catch((err) => {
+            console.error('OCR processing error:', err);
             loadingDiv.style.display = 'none';
             document.getElementById('utr-validate').disabled = false;
             errorDiv.textContent = 'Failed to process the screenshot. Please try a clearer image.';
