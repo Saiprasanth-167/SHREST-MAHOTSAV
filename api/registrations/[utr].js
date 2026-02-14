@@ -1,8 +1,11 @@
 const { Client } = require('pg');
-require('dotenv').config({ path: '../../.env' });
+const initializeDatabase = require('./db-init');
 
 // Function to connect to the database
 async function connectToDatabase() {
+    if (!process.env.DATABASE_URL) {
+        throw new Error('DATABASE_URL environment variable is not set');
+    }
     const client = new Client({
         connectionString: process.env.DATABASE_URL,
         ssl: {
@@ -15,6 +18,13 @@ async function connectToDatabase() {
 
 // Main handler for the serverless function
 module.exports = async (req, res) => {
+    try {
+        await initializeDatabase();
+    } catch (error) {
+        console.error('Database initialization failed:', error);
+        return res.status(500).json({ success: false, message: 'Database initialization failed.' });
+    }
+
     const { utr } = req.params; // Using Express req.params for dynamic routes
     let client;
 

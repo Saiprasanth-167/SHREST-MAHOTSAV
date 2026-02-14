@@ -1,6 +1,10 @@
 const { Client } = require('pg');
+const initializeDatabase = require('./db-init');
 
 async function connectToDatabase() {
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL environment variable is not set');
+  }
   const client = new Client({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
@@ -12,6 +16,13 @@ async function connectToDatabase() {
 module.exports = async (req, res) => {
   if (req.method !== 'GET') {
     return res.status(405).send('Method Not Allowed');
+  }
+
+  try {
+    await initializeDatabase();
+  } catch (error) {
+    console.error('Database initialization failed:', error);
+    return res.status(500).send('Database initialization failed.');
   }
   
   let client;
@@ -28,11 +39,20 @@ module.exports = async (req, res) => {
         const cells = headers.map(h => {
           let val = r[h];
           if (h === 'events' && val) {
-            try {
-              const eventsArray = JSON.parse(val);
+            let eventsArray = val;
+            if (typeof val === 'string') {
+              try {
+                eventsArray = JSON.parse(val);
+              } catch (e) {
+                // Not valid JSON string, use original value
+                eventsArray = val;
+              }
+            }
+            
+            if (Array.isArray(eventsArray)) {
               val = eventsArray.join(', ');
-            } catch {
-              // val remains as is if not valid JSON
+            } else if (typeof eventsArray === 'object' && eventsArray !== null) {
+              val = JSON.stringify(eventsArray);
             }
           }
           val = String(val ?? '');

@@ -1,7 +1,11 @@
 const { Client } = require('pg');
 const xlsx = require('xlsx');
+const initializeDatabase = require('./db-init');
 
 async function connectToDatabase() {
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL environment variable is not set');
+  }
   const client = new Client({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
@@ -11,6 +15,13 @@ async function connectToDatabase() {
 }
 
 module.exports = async (req, res) => {
+  try {
+    await initializeDatabase();
+  } catch (error) {
+    console.error('Database initialization failed:', error);
+    return res.status(500).send('Database initialization failed.');
+  }
+
   let client;
   try {
     client = await connectToDatabase();
@@ -22,14 +33,22 @@ module.exports = async (req, res) => {
       // Format events column
       if (rest.events) {
         let eventsValue = rest.events;
-        try {
-          const eventsArray = JSON.parse(eventsValue);
-          if (Array.isArray(eventsArray)) {
-            rest.events = eventsArray.join(', ');
-          } else {
-            rest.events = String(eventsValue);
+        // If events is already an object/array (due to JSONB), use it directly
+        // Otherwise try to parse it if it's a string
+        let eventsArray = eventsValue;
+        
+        if (typeof eventsValue === 'string') {
+          try {
+            eventsArray = JSON.parse(eventsValue);
+          } catch (e) {
+            // treat as simple string
+            eventsArray = eventsValue;
           }
-        } catch {
+        }
+
+        if (Array.isArray(eventsArray)) {
+          rest.events = eventsArray.join(', ');
+        } else {
           rest.events = String(eventsValue);
         }
       } else {

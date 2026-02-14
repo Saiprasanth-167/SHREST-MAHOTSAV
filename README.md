@@ -20,7 +20,7 @@ A comprehensive event management and registration system built with Node.js, fea
 - **QR Code**: qrcode library
 - **Excel Processing**: xlsx library
 - **Payment**: UPI integration
-- **Deployment**: Render (based on render.yaml)
+- **Deployment**: Vercel (configured via vercel.json)
 
 ## Installation
 
@@ -39,9 +39,10 @@ A comprehensive event management and registration system built with Node.js, fea
    Create a `.env` file in the root directory with the following variables:
    ```
    DATABASE_URL=your_postgresql_connection_string
-   PORT=3000
-   UPI_ID=your_upi_id
-   # Add other required environment variables
+   BACKEND_BASE_URL=your_deployment_url
+   UPI_VPA=your_upi_vpa
+   UPI_NAME=your_upi_name
+   # PORT is optional, defaults to 3000 locally, set by Vercel in production
    ```
 
 4. **Set up the database:**
@@ -75,6 +76,26 @@ The application will be running at `http://localhost:3000`
 - `POST /api/validate-utr` - Validate UPI transaction
 - `POST /api/upi-qr` - Generate UPI QR code
 
+## Deployment
+
+This application is configured for deployment on Vercel.
+
+1. **Connect to Vercel:**
+   - Push your code to a GitHub repository
+   - Connect the repository to Vercel
+   - Vercel will automatically detect the Node.js application and use the configuration in `vercel.json`
+
+2. **Environment Variables:**
+   Set the following environment variables in your Vercel project settings:
+   - `DATABASE_URL`: Your PostgreSQL connection string
+   - `BACKEND_BASE_URL`: Your Vercel deployment URL (e.g., `https://your-app.vercel.app`)
+   - `UPI_VPA`: Your UPI VPA
+   - `UPI_NAME`: Your UPI name
+   - `NODE_ENV`: `production`
+
+3. **Database Migration:**
+   If migrating from Render, ensure your PostgreSQL database is accessible from Vercel. You may need to update your database URL and whitelist Vercel's IP ranges if using a managed database.
+
 ## Project Structure
 
 ```
@@ -82,7 +103,7 @@ SHREST-MAHOTSAV/
 ├── backend.js              # Main backend server
 ├── index.js               # Application entry point
 ├── package.json           # Dependencies and scripts
-├── render.yaml            # Deployment configuration
+├── vercel.json            # Vercel deployment configuration
 ├── TODO.md                # Development tasks
 ├── .gitignore             # Git ignore rules
 ├── api/                   # API endpoints

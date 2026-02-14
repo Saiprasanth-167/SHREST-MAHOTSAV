@@ -49,26 +49,20 @@ const wrapHandler = (handler) => async (req, res) => {
 };
 
 // UPI QR API route (added after app and wrapHandler are defined)
-app.all('/api/upi-qr', wrapHandler(require('./api/upi-qr')));
-app.all('/api/validate-utr', wrapHandler(require('./api/validate-utr')));
+// API routes are now handled by Vercel serverless functions in api/ folder
 
-app.all('/api/register', wrapHandler(require('./api/register')));
 // Removed: OTP and email endpoints
-app.all('/api/live-excel', wrapHandler(require('./api/live-excel')));
-app.all('/api/download-excel', wrapHandler(require('./api/download-excel')));
-app.all('/api/registrations/:utr', wrapHandler(require('./api/registrations/[utr]')));
-app.all('/api/upi-config', wrapHandler(require('./api/upi-config')));
-
-app.get('/live-excel', wrapHandler(require('./api/live-excel')));
-app.get('/download-excel', wrapHandler(require('./api/download-excel')));
 
 // Catch-all route
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'home.html'));
 });
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'home.html'));
+});
 
 // Only start server if not in a serverless-like environment (this check is now simpler)
-if (process.env.NODE_ENV !== 'test') { // A simple check to avoid running server during tests, for example.
+if (process.env.NODE_ENV !== 'test' && process.env.NODE_ENV !== 'production') { // A simple check to avoid running server during tests, for example.
     const initializeDatabase = require('./api/db-init');
     initializeDatabase().then(() => {
         app.listen(PORT, '0.0.0.0', () => {
