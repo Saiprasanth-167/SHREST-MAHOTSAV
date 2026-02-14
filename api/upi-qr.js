@@ -20,18 +20,30 @@ module.exports = async (req, res) => {
 
   // UPI QR format
   const upiString = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}&tr=${encodeURIComponent(txnRef)}`;
+  
   try {
-    // If ?json=1, return JSON with base64 QR
-    if (req.query.json === '1') {
-      const qrUrl = await qr.toDataURL(upiString);
-      return res.json({ success: true, qrUrl, upi: { upiId, name, amount, note, txnRef } });
-    }
-    // Otherwise, return PNG image
-    res.setHeader('Content-Type', 'image/png');
-    await qr.toFileStream(res, upiString, { type: 'png', width: 300 });
+    // Generate QR as data URL (base64)
+    const qrDataUrl = await qr.toDataURL(upiString, {
+      errorCorrectionLevel: 'M',
+      type: 'image/png',
+      width: 300,
+      margin: 1
+    });
+    
+    // Return JSON with base64 QR for easy frontend consumption
+    res.status(200).json({ 
+      success: true, 
+      qrUrl: qrDataUrl,
+      upi: { pa: upiId, pn: name, amount, note, txnRef } 
+    });
   } catch (err) {
+    console.error('UPI QR generation error:', err);
     if (!res.headersSent) {
-      res.status(500).json({ success: false, message: 'Failed to generate UPI QR', error: err.message });
+      res.status(500).json({ 
+        success: false, 
+        message: 'Failed to generate UPI QR', 
+        error: err.message 
+      });
     }
   }
 };

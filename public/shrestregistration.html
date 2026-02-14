@@ -372,22 +372,39 @@
 						upiWarn.style.display = 'none';
 						const tr = genTxnRef();
 						const qUrl = `/api/upi-qr?am=${encodeURIComponent(fee)}&tn=${encodeURIComponent(tn)}&tr=${encodeURIComponent(tr)}`;
-						const img = new Image();
-						img.onload = () => {
-							const ctx = upiCanvas.getContext('2d');
-							upiCanvas.width = Math.min(300, img.width);
-							upiCanvas.height = upiCanvas.width;
-							ctx.clearRect(0,0,upiCanvas.width, upiCanvas.height);
-							ctx.drawImage(img, 0, 0, upiCanvas.width, upiCanvas.height);
-						};
-						img.onerror = () => {
-							upiWarn.style.display = 'block';
-							upiWarn.textContent = 'Failed to load QR image. Ensure server is running.';
-						};
-						img.src = qUrl;
+						
+						// Fetch QR as JSON with base64 data URL
+						const response = await fetch(qUrl, {
+							method: 'GET',
+							headers: { 'Accept': 'application/json' }
+						});
+						
+						if (!response.ok) {
+							throw new Error(`HTTP ${response.status}`);
+						}
+						
+						const data = await response.json();
+						if (data.success && data.qrUrl) {
+							const img = new Image();
+							img.onload = () => {
+								const ctx = upiCanvas.getContext('2d');
+								upiCanvas.width = Math.min(300, img.width);
+								upiCanvas.height = upiCanvas.width;
+								ctx.clearRect(0, 0, upiCanvas.width, upiCanvas.height);
+								ctx.drawImage(img, 0, 0, upiCanvas.width, upiCanvas.height);
+							};
+							img.onerror = () => {
+								upiWarn.style.display = 'block';
+								upiWarn.textContent = 'Failed to render QR image.';
+							};
+							img.src = data.qrUrl; // data URL (base64)
+						} else {
+							throw new Error(data.message || 'Invalid QR response');
+						}
 					} catch (e) {
+						console.error('QR generation error:', e);
 						upiWarn.style.display = 'block';
-						upiWarn.textContent = 'Failed to render QR.';
+						upiWarn.textContent = 'Failed to generate QR. Using fallback UPI ID.';
 					}
 				} else {
 					if (upiCanvas) { const ctx = upiCanvas.getContext('2d'); ctx && ctx.clearRect(0,0,upiCanvas.width, upiCanvas.height); }
