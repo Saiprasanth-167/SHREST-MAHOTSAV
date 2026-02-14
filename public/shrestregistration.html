@@ -321,8 +321,7 @@
 		async function fetchUpiConfig() {
 			try {
 				if (location.protocol === 'file:') {
-					upiWarn.style.display = 'block';
-					upiWarn.textContent = 'Open this page via a web server (http/https), not file://, for QR to work.';
+					console.warn('File protocol detected, using fallback UPI config');
 					updateFee();
 					return;
 				}
@@ -336,18 +335,19 @@
 				}
 				const data = await resp.json();
 				if (data && data.pa) {
-					upiConfig = { pa: data.pa, pn: data.pn || 'SHREST MAHOTSAV' };
-					console.log('UPI config loaded:', upiConfig);
+					upiConfig = { pa: data.pa, pn: data.pn || 'TATA ANANTHA VENKATA' };
+					console.log('✅ UPI config loaded from server:', upiConfig);
 				} else {
-					console.warn('UPI config missing pa field, using fallback');
+					console.warn('⚠️ UPI config missing pa field, using fallback:', upiConfig);
 				}
 				updateFee();
 			} catch (e) {
-				console.error('fetchUpiConfig error:', e);
-				// Fallback is already set in initialization, just update UI
+				console.warn('⚠️ Failed to fetch UPI config from server, using fallback:', e.message);
+				console.log('📱 Fallback UPI config:', upiConfig);
+				// Fallback is already set, just update UI
 				updateFee();
-				}
 			}
+		}
 
 			function buildUpiUrl({ pa, pn, am, tn, tr }) {
 				const params = new URLSearchParams();
@@ -529,7 +529,7 @@
 				const fee = yr ? (table[yr] || 0) : 0;
 				if (course && course !== 'select' && yr && fee > 0) {
 					feeEl.textContent = `Fee: Rs ${fee}`;
-					if (phonepeAmount) phonepeAmount.textContent = upiConfig.pa ? `Pay Rs ${fee} to this account` : `UPI account not configured`;
+					if (phonepeAmount) phonepeAmount.textContent = `Pay Rs ${fee} to UPI: ${upiConfig.pa}`;
 					renderUpi(fee);
 				} else {
 					feeEl.textContent = 'Fee: -';
@@ -665,24 +665,39 @@
             const normalizedText = ocrText.replace(/[,\s]/g, ''); // Remove commas and spaces
             const normalizedUpper = upper.replace(/[,\s]/g, '');
             
-            // Check for exact amount and ±5 rupee tolerance for OCR errors
+            // Check for exact amount with multiple patterns
             const amtPatterns = [
                 new RegExp('(?:₹|RS\\.?|INR)?' + amt + '(?:\\.00?)?', 'i'),
                 new RegExp('\\b' + amt + '(?:\\.00?)?\\b', 'i'),
-                new RegExp('(?:₹|RS\\.?|INR)?' + amt, 'i')
+                new RegExp('(?:₹|RS\\.?|INR)?' + amt, 'i'),
+                // Check for amounts like "2 00" or "20 0" (OCR misreads)
+                new RegExp(amt.split('').join('[\\s,.]*'), 'i')
             ];
             
-            let hasAmount = amtPatterns.some(rx => rx.test(normalizedText) || rx.test(normalizedUpper));
+            let hasAmount = amtPatterns.some(rx => rx.test(normalizedText) || rx.test(normalizedUpper) || rx.test(ocrText));
             
-            // Check with tolerance (±5 rupees)
+            // Check with ±10 rupee tolerance for OCR errors
             if (!hasAmount && expectedFee > 0) {
-                for (let tolerance = 1; tolerance <= 5; tolerance++) {
+                for (let tolerance = 1; tolerance <= 10; tolerance++) {
                     const amtLow = expectedFee - tolerance;
                     const amtHigh = expectedFee + tolerance;
-                    if (normalizedText.includes(String(amtLow)) || normalizedText.includes(String(amtHigh))) {
+                    if (normalizedText.includes(String(amtLow)) || normalizedText.includes(String(amtHigh)) ||
+                        ocrText.includes(String(amtLow)) || ocrText.includes(String(amtHigh))) {
                         hasAmount = true;
-                        console.log(`Amount found with tolerance: ${tolerance} rupees`);
+                        console.log(`✅ Amount found with ±${tolerance} rupee tolerance`);
                         break;
+                    }
+                }
+            }
+            
+            // Final fallback: just check if any number close to the amount exists
+            if (!hasAmount) {
+                const amountMatch = normalizedText.match(/\d{2,4}/);
+                if (amountMatch) {
+                    const foundAmount = parseInt(amountMatch[0]);
+                    if (Math.abs(foundAmount - expectedFee) <= 20) {
+                        hasAmount = true;
+                        console.log(`✅ Amount found via fuzzy match: ${foundAmount} ≈ ${expectedFee}`);
                     }
                 }
             }
