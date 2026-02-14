@@ -6,56 +6,19 @@
       "use": "@vercel/node"
     },
     {
-      "src": "api/register.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/validate-utr.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/live-excel.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/download-excel.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/upi-config.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/upi-qr.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/registrations/[utr].js",
+      "src": "api/**/*.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     { "handle": "filesystem" },
     {
-      "src": "/public/(.*)",
+      "src": "/(.*\\.html)$",
       "headers": {
-        "cache-control": "public, max-age=0, must-revalidate"
-      },
-      "dest": "/public/$1"
-    },
-    {
-      "src": ".*\\.html$",
-      "headers": {
-        "cache-control": "public, max-age=0, must-revalidate"
+        "Cache-Control": "public, max-age=0, must-revalidate"
       }
     },
-    { "src": "/api/validate-utr", "dest": "/api/validate-utr.js" },
-    { "src": "/api/register", "dest": "/api/register.js" },
-    { "src": "/api/live-excel", "dest": "/api/live-excel.js" },
-    { "src": "/api/download-excel", "dest": "/api/download-excel.js" },
-    { "src": "/api/upi-config", "dest": "/api/upi-config.js" },
-    { "src": "/api/upi-qr", "dest": "/api/upi-qr.js" },
-    { "src": "/api/registrations/(.*)", "dest": "/api/registrations/[utr].js" },
+    { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/(.*)", "dest": "/index.js" }
   ]
 }
