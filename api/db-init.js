@@ -44,6 +44,22 @@ async function initializeDatabase() {
       }
     }
 
+    // Create audit table for registration copies
+    try {
+      const createAuditQuery = `
+        CREATE TABLE IF NOT EXISTS audit_registrations (
+          id SERIAL PRIMARY KEY,
+          registration_id INTEGER,
+          payload JSONB,
+          created_at TIMESTAMPTZ DEFAULT NOW()
+        );
+      `;
+      await client.query(createAuditQuery);
+      console.log('Database initialized: "audit_registrations" table checked/created.');
+    } catch (err) {
+      console.error('Error creating audit_registrations table:', err.message);
+    }
+
   } catch (err) {
     console.error('Error during database initialization:', err);
     // We throw the error to prevent the server from starting if the DB is not ready.
