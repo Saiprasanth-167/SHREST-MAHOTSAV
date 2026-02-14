@@ -1,5 +1,5 @@
 const { Client } = require('pg');
-const initializeDatabase = require('./db-init');
+const initializeDatabase = require('../db-init');
 
 // Function to connect to the database
 async function connectToDatabase() {

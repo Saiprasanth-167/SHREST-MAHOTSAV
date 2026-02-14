@@ -1,10 +1,19 @@
-
 const qr = require('qrcode');
 
 module.exports = async (req, res) => {
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept');
+  
+  // Handle preflight
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
   // Get dynamic params from query
-  const upiId = req.query.pa || "6305369920@ybl";
-  const name = req.query.pn || "TATA ANANTHA VENKATA";
+  const upiId = req.query.pa || process.env.UPI_ID || "6305369920@ybl";
+  const name = req.query.pn || process.env.UPI_NAME || "TATA ANANTHA VENKATA";
   const amount = req.query.am || 100;
   const note = req.query.tn || "SHREST-MAHOTSAV_2K25 Registration Fee";
   const txnRef = req.query.tr || "SHREST" + Date.now();

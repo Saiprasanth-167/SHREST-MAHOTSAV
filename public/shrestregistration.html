@@ -304,31 +304,46 @@
 				'DEGREE': { '1': 100, '2': 200, '3': 300 },
 				'Other':  { '1': 100, '2': 200, '3': 300 }
 			};
-			let upiConfig = { pa: '', pn: 'SHREST MAHOTSAV' };
-			const courseSel = document.getElementById('feeCourseSelect');
-			const otherCourseGroup = document.getElementById('feeOtherCourseGroup');
-			const courseOther = document.getElementById('feeCourseOther');
-			const yearSel = document.getElementById('feeYearSelect');
-			const yearBlock = document.getElementById('feeYearBlock');
-			const feeEl = document.getElementById('feeDisplayReg');
-			const phonepeAmount = document.getElementById('feePhonepeAmount');
-			const upiCanvas = document.getElementById('upiQrCanvas');
-			const upiWarn = document.getElementById('feeUpiWarn');
+// Fallback UPI config in case API fails
+		let upiConfig = { pa: '6305369920@ybl', pn: 'TATA ANANTHA VENKATA' };
+		const courseSel = document.getElementById('feeCourseSelect');
+		const otherCourseGroup = document.getElementById('feeOtherCourseGroup');
+		const courseOther = document.getElementById('feeCourseOther');
+		const yearSel = document.getElementById('feeYearSelect');
+		const yearBlock = document.getElementById('feeYearBlock');
+		const feeEl = document.getElementById('feeDisplayReg');
+		const phonepeAmount = document.getElementById('feePhonepeAmount');
+		const upiCanvas = document.getElementById('upiQrCanvas');
+		const upiWarn = document.getElementById('feeUpiWarn');
 
-			async function fetchUpiConfig() {
-				try {
-					if (location.protocol === 'file:') {
-						upiWarn.style.display = 'block';
-						upiWarn.textContent = 'Open this page via a web server (http/https), not file://, for QR to work.';
-						return;
-					}
-					const resp = await fetch('/api/upi-config');
-					const data = await resp.json();
-					upiConfig = { pa: data.pa || '', pn: data.pn || 'SHREST MAHOTSAV' };
-					updateFee();
-				} catch (e) {
+		async function fetchUpiConfig() {
+			try {
+				if (location.protocol === 'file:') {
 					upiWarn.style.display = 'block';
-					upiWarn.textContent = 'Could not load UPI details. Ensure server is running.';
+					upiWarn.textContent = 'Open this page via a web server (http/https), not file://, for QR to work.';
+					updateFee();
+					return;
+				}
+				const resp = await fetch('/api/upi-config', {
+					method: 'GET',
+					headers: { 'Accept': 'application/json' },
+					cache: 'no-cache'
+				});
+				if (!resp.ok) {
+					throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
+				}
+				const data = await resp.json();
+				if (data && data.pa) {
+					upiConfig = { pa: data.pa, pn: data.pn || 'SHREST MAHOTSAV' };
+					console.log('UPI config loaded:', upiConfig);
+				} else {
+					console.warn('UPI config missing pa field, using fallback');
+				}
+				updateFee();
+			} catch (e) {
+				console.error('fetchUpiConfig error:', e);
+				// Fallback is already set in initialization, just update UI
+				updateFee();
 				}
 			}
 

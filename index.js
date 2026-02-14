@@ -79,14 +79,18 @@ app.get('*', (req, res) => {
 // Only start server if not in a serverless-like environment (this check is now simpler)
 if (process.env.NODE_ENV !== 'test' && process.env.NODE_ENV !== 'production') { // A simple check to avoid running server during tests, for example.
     const initializeDatabase = require('./api/db-init');
-    initializeDatabase().then(() => {
-        app.listen(PORT, '0.0.0.0', () => {
-            console.log(`🚀 SHREST MAHOTSAV Server running on port ${PORT}`);
+    initializeDatabase()
+        .then(() => {
+            console.log('Database initialized successfully');
+        })
+        .catch(error => {
+            console.warn("Database initialization failed (continuing anyway):", error.message);
+        })
+        .finally(() => {
+            app.listen(PORT, '0.0.0.0', () => {
+                console.log(`🚀 SHREST MAHOTSAV Server running on port ${PORT}`);
+            });
         });
-    }).catch(error => {
-        console.error("Failed to initialize database. Server not started.", error);
-        process.exit(1);
-    });
 }
 
 module.exports = app;
