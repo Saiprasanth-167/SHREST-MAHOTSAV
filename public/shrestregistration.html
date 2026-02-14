@@ -1,5 +1,7 @@
 <!-- Tesseract.js for OCR -->
 	<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.1/dist/tesseract.min.js"></script>
+<!-- QRCode.js for client-side QR generation -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -402,9 +404,67 @@
 							throw new Error(data.message || 'Invalid QR response');
 						}
 					} catch (e) {
-						console.error('QR generation error:', e);
-						upiWarn.style.display = 'block';
-						upiWarn.textContent = 'Failed to generate QR. Using fallback UPI ID.';
+						console.error('Server QR generation failed:', e, '- Using client-side fallback');
+						
+						// Client-side fallback: generate QR on the browser
+						try {
+							const tr = genTxnRef();
+							const upiString = buildUpiUrl({
+								pa: upiConfig.pa,
+								pn: upiConfig.pn,
+								am: fee,
+								tn: tn,
+								tr: tr
+							});
+							
+							// Clear canvas and create wrapper div for QRCode library
+							const ctx = upiCanvas.getContext('2d');
+							ctx.clearRect(0, 0, upiCanvas.width, upiCanvas.height);
+							
+							// Create temporary container for QR generation
+							const tempDiv = document.createElement('div');
+							tempDiv.style.display = 'none';
+							document.body.appendChild(tempDiv);
+							
+							// Generate QR using QRCode.js
+							new QRCode(tempDiv, {
+								text: upiString,
+								width: 300,
+								height: 300,
+								colorDark: "#000000",
+								colorLight: "#ffffff",
+								correctLevel: QRCode.CorrectLevel.M
+							});
+							
+							// Wait for QR to generate then draw to canvas
+							setTimeout(() => {
+								const qrImg = tempDiv.querySelector('img');
+								if (qrImg) {
+									qrImg.onload = () => {
+										upiCanvas.width = 300;
+										upiCanvas.height = 300;
+										ctx.drawImage(qrImg, 0, 0, 300, 300);
+										document.body.removeChild(tempDiv);
+										upiWarn.style.display = 'none';
+									};
+									if (qrImg.complete) {
+										upiCanvas.width = 300;
+										upiCanvas.height = 300;
+										ctx.drawImage(qrImg, 0, 0, 300, 300);
+										document.body.removeChild(tempDiv);
+										upiWarn.style.display = 'none';
+									}
+								} else {
+									document.body.removeChild(tempDiv);
+									upiWarn.style.display = 'block';
+									upiWarn.textContent = 'QR generation failed. Please use UPI ID manually.';
+								}
+							}, 100);
+						} catch (fallbackError) {
+							console.error('Client-side QR fallback also failed:', fallbackError);
+							upiWarn.style.display = 'block';
+							upiWarn.textContent = 'QR generation unavailable. Use UPI ID: ' + upiConfig.pa;
+						}
 					}
 				} else {
 					if (upiCanvas) { const ctx = upiCanvas.getContext('2d'); ctx && ctx.clearRect(0,0,upiCanvas.width, upiCanvas.height); }
