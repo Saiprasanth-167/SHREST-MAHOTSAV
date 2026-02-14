@@ -47,9 +47,10 @@
   <script>
     const details = document.getElementById('details');
     const scanStatus = document.getElementById('scan-status');
-    const reader = new Html5Qrcode("reader");
-  const config = { fps: 30, qrbox: { width: 300, height: 300 } };
     let scannedUtrs = new Set();
+
+    // Use a more conservative config for better stability
+    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
 
     function showData(obj) {
       document.getElementById('d_name').textContent = obj.name || '';
@@ -62,11 +63,19 @@
       
       let eventsDisplay = '';
       if (obj.events) {
-        try {
-          const eventsArray = JSON.parse(obj.events);
-          eventsDisplay = eventsArray.join(', ');
-        } catch {
-          eventsDisplay = obj.events;
+        let eventsValue = obj.events;
+        // Handle potentially double-stringified JSON or arrays
+        if (typeof eventsValue === 'string') {
+             try {
+                const parsed = JSON.parse(eventsValue);
+                if (Array.isArray(parsed)) eventsValue = parsed;
+             } catch(e) {}
+        }
+        
+        if (Array.isArray(eventsValue)) {
+          eventsDisplay = eventsValue.join(', ');
+        } else {
+           eventsDisplay = String(eventsValue);
         }
       }
       document.getElementById('d_events').textContent = eventsDisplay;
@@ -76,18 +85,22 @@
     }
 
     function onScanSuccess(decodedText) {
-      scanStatus.textContent = '';
-      scanStatus.style.color = 'black';
+      scanStatus.textContent = 'Processing...';
+      scanStatus.style.color = 'blue';
 
       try {
         const obj = JSON.parse(decodedText);
+        
+        // Basic validation
         if (!obj.utr) {
-          throw new Error("Invalid QR code: No UTR found.");
+           console.warn("Scanned non-compatible QR code:", decodedText);
+           throw new Error("Invalid QR: Missing UTR.");
         }
 
         if (scannedUtrs.has(obj.utr)) {
           scanStatus.textContent = 'This QR is already scanned.';
           scanStatus.style.color = 'orange';
+          // show data anyway? no, instructions say hide
           details.style.display = 'none';
           return;
         }
@@ -95,10 +108,10 @@
         fetch('/api/registrations/' + encodeURIComponent(String(obj.utr)))
           .then(res => {
             if (res.status === 404) {
-              scanStatus.textContent = 'QR IS INVALID';
-              scanStatus.style.color = 'red';
-              details.style.display = 'none';
-              return null;
+              throw new Error('Registration not found in database.');
+            }
+            if (!res.ok) {
+                throw new Error('Server error: ' + res.status);
             }
             return res.json();
           })
@@ -106,31 +119,44 @@
             if (data && data.success && data.registration) {
               showData(data.registration);
               scannedUtrs.add(obj.utr);
-              scanStatus.textContent = 'Scan successful!';
+              scanStatus.textContent = 'Verified Successfully!';
               scanStatus.style.color = 'green';
+            } else {
+               throw new Error('Invalid response from server.');
             }
           })
-          .catch(() => {
-            scanStatus.textContent = 'Error validating QR code.';
+          .catch((err) => {
+            scanStatus.textContent = err.message;
             scanStatus.style.color = 'red';
             details.style.display = 'none';
           });
 
       } catch (e) {
-        scanStatus.textContent = 'This QR is invalid.';
+        scanStatus.textContent = 'Invalid QR Code Format.';
         scanStatus.style.color = 'red';
         details.style.display = 'none';
       }
     }
 
-    reader.start({ facingMode: "environment" }, config, onScanSuccess);
+    // Initialize HTML5 QR Code Scanner
+    const html5QrCode = new Html5Qrcode("reader");
+    
+    // Start camera
+    html5QrCode.start(
+        { facingMode: "environment" }, 
+        config, 
+        onScanSuccess
+    ).catch(err => {
+        console.error("Error starting scanner", err);
+        scanStatus.textContent = "Error: Camera access denied or not supported. " + err;
+        scanStatus.style.color = "red";
+    });
 
     document.getElementById('clearBtn').onclick = () => {
       details.style.display = 'none';
       scanStatus.textContent = '';
       ["d_name","d_regno","d_mobile","d_campus","d_year","d_utr","d_amount","d_events","d_ts"].forEach(id => document.getElementById(id).textContent = '');
     };
-
   </script>
 </body>
 </html>
