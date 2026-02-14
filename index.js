@@ -6,6 +6,20 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// API Routes - Wrapper function for serverless functions
+const wrapHandler = (handler) => async (req, res) => {
+    try {
+        // If the handler is an ES module or CommonJS module with default export
+        const fn = handler.default || handler;
+        await fn(req, res);
+    } catch (error) {
+        console.error('API Error:', error);
+        if (!res.headersSent) {
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+};
+
 // Middleware
 app.use(cors());
 app.use(express.json({limit: '10mb'}));
@@ -56,9 +70,6 @@ app.all('/api/validate-utr', wrapHandler(require('./api/validate-utr')));
 app.all('/api/registrations/:utr', wrapHandler(require('./api/registrations/[utr]')));
 
 // Catch-all route
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'home.html'));
-});
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'home.html'));
 });
