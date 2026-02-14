@@ -63,13 +63,16 @@ app.get('/celebration', (req, res) => {
 });
 
 // Make API endpoints explicitly available through Express too, for robustness
-app.all('/api/live-excel', wrapHandler(require('./api/live-excel')));
-app.all('/api/download-excel', wrapHandler(require('./api/download-excel')));
-app.all('/api/register', wrapHandler(require('./api/register')));
-app.all('/api/validate-utr', wrapHandler(require('./api/validate-utr')));
-app.all('/api/upi-config', wrapHandler(require('./api/upi-config')));
-app.all('/api/upi-qr', wrapHandler(require('./api/upi-qr')));
-app.all('/api/registrations/:utr', wrapHandler(require('./api/registrations/[utr]')));
+// BUT: Skip this in production (Vercel) where serverless functions handle /api/*
+if (process.env.NODE_ENV !== 'production') {
+    app.all('/api/live-excel', wrapHandler(require('./api/live-excel')));
+    app.all('/api/download-excel', wrapHandler(require('./api/download-excel')));
+    app.all('/api/register', wrapHandler(require('./api/register')));
+    app.all('/api/validate-utr', wrapHandler(require('./api/validate-utr')));
+    app.all('/api/upi-config', wrapHandler(require('./api/upi-config')));
+    app.all('/api/upi-qr', wrapHandler(require('./api/upi-qr')));
+    app.all('/api/registrations/:utr', wrapHandler(require('./api/registrations/[utr]')));
+}
 
 // Catch-all route
 app.get('*', (req, res) => {

@@ -12,13 +12,7 @@
   ],
   "routes": [
     { "handle": "filesystem" },
-    {
-      "src": "/(.*\\.html)$",
-      "headers": {
-        "Cache-Control": "public, max-age=0, must-revalidate"
-      }
-    },
-    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/api/(.*)", "dest": "api/$1.js" },
     { "src": "/(.*)", "dest": "/index.js" }
   ]
 }
