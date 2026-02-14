@@ -48,15 +48,18 @@ const wrapHandler = (handler) => async (req, res) => {
     }
 };
 
-// UPI QR API route (added after app and wrapHandler are defined)
-// API routes are now handled by Vercel serverless functions in api/ folder
-
-// Removed: OTP and email endpoints
+// API routes - Required for local development
+// On Vercel, these will be handled by serverless functions in api/ folder
+// but locally, Express needs to handle them
+app.all('/api/upi-qr', wrapHandler(require('./api/upi-qr')));
+app.all('/api/validate-utr', wrapHandler(require('./api/validate-utr')));
+app.all('/api/register', wrapHandler(require('./api/register')));
+app.all('/api/live-excel', wrapHandler(require('./api/live-excel')));
+app.all('/api/download-excel', wrapHandler(require('./api/download-excel')));
+app.all('/api/registrations/:utr', wrapHandler(require('./api/registrations/[utr]')));
+app.all('/api/upi-config', wrapHandler(require('./api/upi-config')));
 
 // Catch-all route
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'home.html'));
-});
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'home.html'));
 });
@@ -69,8 +72,13 @@ if (process.env.NODE_ENV !== 'test' && process.env.NODE_ENV !== 'production') { 
             console.log(`🚀 SHREST MAHOTSAV Server running on port ${PORT}`);
         });
     }).catch(error => {
-        console.error("Failed to initialize database. Server not started.", error);
-        process.exit(1);
+        console.error("⚠️ Database initialization warning (non-critical in development):", error.message);
+        // In development, we allow the server to start even if DB init fails
+        // The DB operations will fail at runtime, but frontend can still load
+        console.log('🚀 Starting server despite database initialization error...');
+        app.listen(PORT, '0.0.0.0', () => {
+            console.log(`🚀 SHREST MAHOTSAV Server running on port ${PORT} (without database)`);
+        });
     });
 }
 
