@@ -2,24 +2,20 @@
   "version": 2,
   "rewrites": [
     {
-      "source": "/",
-      "destination": "/index.html"
-    },
-    {
       "source": "/shrestregistration",
-      "destination": "/shrestregistration.html"
+      "destination": "/public/shrestregistration.html"
     },
     {
       "source": "/events",
-      "destination": "/events.html"
+      "destination": "/public/events.html"
     },
     {
       "source": "/qrscanner",
-      "destination": "/qrscanner.html"
+      "destination": "/public/qrscanner.html"
     },
     {
       "source": "/celebration",
-      "destination": "/celebration.html"
+      "destination": "/public/celebration.html"
     }
   ],
   "cleanUrls": true
