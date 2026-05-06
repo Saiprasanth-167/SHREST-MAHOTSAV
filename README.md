@@ -140,3 +140,12 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Support
 
 For support or questions, please open an issue on GitHub or contact the development team.
+
+## Poster / Background Image
+
+Place the event poster image at the project root as `poster.jpg` (or in `public/` as `poster.jpg`). The site CSS will try `/poster.jpg` first, then fallback to `SHREST MAHOTSAV (MAIN BANNER).png` if present, and finally to the gradient background. Example:
+
+1. Save the poster image (the one you attached) as `poster.jpg` in the project root.
+2. Start the server and open `index.html` — the poster will be used as the full-page background with a dark overlay for legibility.
+
+If you want the image in a different location, update the `background-image` URLs in `styles.css` accordingly.

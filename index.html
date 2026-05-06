@@ -4,43 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SHREST MAHOTSAV 2K25</title>
-  <style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background: linear-gradient(135deg,#f935f9 0%,#57c5f8 95%); }
-    .layout { width: 96%; max-width: 980px; display:flex; gap:18px; align-items:stretch; justify-content:center; padding: 10px; }
-    .card { width: 100%; max-width: 520px; background:#fff; border-radius:16px; padding:28px; box-shadow:0 10px 30px rgba(0,0,0,0.08); text-align:center; }
-    h1 { margin:0 0 10px; color:#1a2980; }
-    p { color:#34495e; }
-    .actions { display:flex; gap:14px; margin-top:24px; }
-    .btn { flex:1; padding:12px 16px; border:none; border-radius:8px; font-weight:600; cursor:pointer; color:#fff; box-shadow:0 2px 8px #0001; transition: transform .08s ease-in-out; }
-    .btn:hover { transform: translateY(-1px); }
-    .student { background: linear-gradient(90deg,#1a2980 0%, #26d0ce 100%); }
-    .organiser { background: linear-gradient(90deg,#f7971e 0%, #ffd200 100%); }
-    .note { margin-top:14px; color:#7f8c8d; font-size:.94rem; }
-    
-    /* Modal styles */
-    .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.45); display:none; align-items:center; justify-content:center; z-index:1000; }
-    .modal { width:92%; max-width:380px; background:#fff; border-radius:12px; padding:18px; box-shadow:0 10px 30px rgba(0,0,0,0.25); }
-    .modal h3 { margin:0 0 10px; color:#1a2980; }
-    .modal .field { margin:10px 0 6px; }
-    .modal input[type="password"] { width:90%; padding: 10px; border:1.5px solid #b2bec3; border-radius:6px; font-size:1rem; }
-    .modal .actions { display:flex; gap:10px; margin-top:12px; }
-    .btn-secondary { background:#b2bec3; color:#fff; }
-    .btn-primary { background: linear-gradient(90deg,#1a2980 0%, #26d0ce 100%); }
-    .error { color:#e53935; font-size:.92rem; min-height:18px; }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="layout">
-    <div class="card">
-      <h1>SHREST MAHOTSAV 2K25</h1>
-      <p>Welcome! Please choose your path below.</p>
-      <div class="actions">
-        <button id="studentBtn" class="btn student">Student Registration</button>
-        <button id="organiserBtn" class="btn organiser">Organisers</button>
+  <div class="site-overlay">
+    <main class="hero">
+      <div class="hero-inner" style="grid-template-columns:1fr;">
+        <div class="hero-left">
+          <h2 class="event-title">SHREST MAHOTSAV 2K25</h2>
+          <p class="event-sub">Sep 24th • 10AM • Central Auditorium • Gayatri Vidya Parishad College</p>
+          <div class="cta-row">
+            <button id="studentBtn" class="btn btn-prim">Student Registration</button>
+            <button id="organiserBtn" class="btn btn-ghost">Organisers</button>
+          </div>
+        </div>
       </div>
-      <div class="note">Organisers require a passcode to access scanning tools.</div>
-    </div>
-    
+    </main>
   </div>
   <!-- Organiser password modal -->
   <div id="passModal" class="modal-backdrop">
