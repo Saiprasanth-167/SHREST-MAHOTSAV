@@ -12,16 +12,21 @@
 	<style>
 		body {
 			font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
-			background: transparent;
 			margin: 0;
 			padding: 0;
 			min-height: 100vh;
+			height: auto;
+			flex-direction: column;
+			justify-content: flex-start;
 		}
 		.container {
-			max-width: 480px;
-			margin: 48px auto;
-			background: rgba(255,255,255,0.97);
-			padding: 36px 38px 30px 38px;
+			max-width: 520px;
+			margin: 16px auto 48px;
+			background: rgba(255, 255, 255, 0.65);
+			backdrop-filter: blur(12px);
+			-webkit-backdrop-filter: blur(12px);
+			border: 1px solid rgba(255, 255, 255, 0.4);
+			padding: 24px 30px;
 			border-radius: 18px;
 			box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
 			position: relative;
@@ -30,12 +35,12 @@
 		h2 {
 			text-align: center;
 			color: whitesmoke;
-			font-size: 2.1rem;
-			margin-bottom: 28px;
+			font-size: 1.8rem;
+			margin-bottom: 16px;
 			letter-spacing: 1px;
 		}
 		.form-group {
-			margin-bottom: 22px;
+			margin-bottom: 14px;
 		}
 		label {
 			display: block;
@@ -103,9 +108,10 @@
 		/* Custom file input */
 		input[type="file"]::-webkit-file-upload-button {
 			visibility: hidden;
+			width: 0;
 		}
 		input[type="file"]::before {
-			content: 'Choose Screenshot';
+			content: 'Upload';
 			display: inline-block;
 			background: #26d0ce;
 			color: #fff;
@@ -135,9 +141,9 @@
 		}
 
 		/* Fee side widget (mirrors home.html) */
-		.fee-side { width: 92%; max-width: 520px; background:#fff; border-radius:16px; padding:22px; box-shadow:0 10px 30px rgba(0,0,0,0.08); text-align:left; margin: 28px auto; }
+		.fee-side { width: 92%; max-width: 520px; background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius:16px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.08); text-align:left; margin: 16px auto; }
 		.fee-side h3 { margin:0 0 10px; color:#1a2980; font-size:1.1rem; }
-		.fee-side label { display:block; margin-top:8px; margin-bottom:6px; color:#34495e; font-weight:600; }
+		.fee-side label { display:block; margin-top:6px; margin-bottom:4px; color:#34495e; font-weight:600; }
 		.fee-side select { width:100%; padding:10px; border:1.5px solid #b2bec3; border-radius:8px; font-size:1rem; background:#fff; }
 		.fee-side input[type="text"] { width:100%; padding:10px; border:1.5px solid #b2bec3; border-radius:8px; font-size:1rem; background:#fff; }
 		.fee-note { margin-top:8px; color:#7f8c8d; font-size:.9rem; }
@@ -149,7 +155,7 @@
 		.fee-qr-actions { display:flex; gap:10px; justify-content:center; margin-top:8px; flex-wrap:wrap; }
 		.fee-qr-actions a, .fee-qr-actions button { padding:8px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:600; color:#fff; text-decoration:none; background:linear-gradient(90deg,#1a2980 0%, #26d0ce 100%); }
 		/* Top title container */
-		.title-side { width: 100%; max-width: 600px;background: linear-gradient(120deg, #9236e8 50%, #66bbe3 50%); border-radius:14px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.08); text-align:center; margin: 28px auto 0; 
+		.title-side { width: 92%; max-width: 520px; background: linear-gradient(120deg, rgba(146, 54, 232, 0.75) 0%, rgba(102, 187, 227, 0.75) 100%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius:14px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,0.08); text-align:center; margin: 24px auto 0; 
 		}
 	</style>
 </head>

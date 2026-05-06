@@ -18,6 +18,12 @@ module.exports = async (req, res) => {
   if (!utr || !/^\d{12}$/.test(utr)) {
     return res.status(400).json({ valid: false, message: 'Invalid UTR number.' });
   }
+
+  if (!process.env.DATABASE_URL) {
+    console.error('DATABASE_URL is missing in environment variables');
+    return res.status(500).json({ valid: false, message: 'Database connection string is missing! Please add DATABASE_URL to your .env file or Vercel Environment Variables.' });
+  }
+
   let client;
   try {
     client = new Client({
@@ -35,7 +41,7 @@ module.exports = async (req, res) => {
     }
   } catch (e) {
     console.error('Error validating UTR:', e);
-    return res.status(500).json({ valid: false, message: 'Server error validating UTR.' });
+    return res.status(500).json({ valid: false, message: `DB Error: ${e.message}` });
   } finally {
     if (client) {
       await client.end();
