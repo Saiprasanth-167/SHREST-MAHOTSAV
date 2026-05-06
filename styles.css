@@ -13,7 +13,7 @@ body{
   -moz-osx-font-smoothing:grayscale;
   color:var(--text, #0b1526);
   /* Poster (preferred), fallback to shipped image, then gradient */
-  background-image: url('/poster.jpg'), url('/SHREST MAHOTSAV (MAIN BANNER).png'), linear-gradient(135deg,#f7b7ff 0%,#b3e5ff 100%);
+  background-image: url('/poster.jpg'), url('/SHREST%20MAHOTSAV%20%28MAIN%20BANNER%29.png'), linear-gradient(135deg,#f7b7ff 0%,#b3e5ff 100%);
   background-size: cover, cover, auto;
   background-position: center center;
   background-repeat: no-repeat;
