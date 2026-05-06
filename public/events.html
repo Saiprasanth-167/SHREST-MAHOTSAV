@@ -190,18 +190,6 @@
         </form>
     </div>
     <script>
-        // AJAX check for registrations (no UI message shown)
-        fetch('/api/has-registrations')
-            .then(res => res.json())
-            .then(data => {
-                if (!data.hasRegistrations) {
-                    // Intentionally no UI action
-                }
-            })
-            .catch(() => {
-                // Non-blocking if this check fails
-            });
-        
         // On page load, check if registration data exists
         window.onload = function() {
             const regData = localStorage.getItem('shrest_registration');
@@ -272,8 +260,7 @@
                         const qrLink = document.getElementById('qr-link');
                         qrImg.src = data.qrUrl;
                         qrLink.href = data.qrUrl;
-                        const filename = data.qrUrl.split('/').pop() || 'qr.png';
-                        qrLink.setAttribute('download', filename);
+                        qrLink.setAttribute('download', 'shrest-registration-qr.png');
                         qrWrapper.style.display = 'block';
                         try { localStorage.setItem('shrest.qrUrl', String(data.qrUrl)); } catch(_) {}
                         // Update big view link with query param for portability

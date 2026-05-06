@@ -29,16 +29,22 @@ module.exports = async (req, res) => {
       const { id, ...rest } = row;
       // Format events column
       if (rest.events) {
-        let eventsValue = rest.events;
-        try {
-          const eventsArray = JSON.parse(eventsValue);
-          if (Array.isArray(eventsArray)) {
-            rest.events = eventsArray.join(', ');
-          } else {
-            rest.events = String(eventsValue);
+        if (Array.isArray(rest.events)) {
+          rest.events = rest.events.join(', ');
+        } else if (typeof rest.events === 'object') {
+          rest.events = JSON.stringify(rest.events);
+        } else {
+          // If it's a string, try to parse it in case it was stored as a stringified string
+          try {
+            const parsed = JSON.parse(rest.events);
+            if (Array.isArray(parsed)) {
+              rest.events = parsed.join(', ');
+            } else {
+              rest.events = String(parsed);
+            }
+          } catch {
+            rest.events = String(rest.events);
           }
-        } catch {
-          rest.events = String(eventsValue);
         }
       } else {
         rest.events = '';

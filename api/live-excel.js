@@ -36,11 +36,17 @@ module.exports = async (req, res) => {
         const cells = headers.map(h => {
           let val = r[h];
           if (h === 'events' && val) {
-            try {
-              const eventsArray = JSON.parse(val);
-              val = eventsArray.join(', ');
-            } catch {
-              // val remains as is if not valid JSON
+            if (Array.isArray(val)) {
+              val = val.join(', ');
+            } else if (typeof val === 'object') {
+              val = JSON.stringify(val);
+            } else {
+              try {
+                const parsed = JSON.parse(val);
+                val = Array.isArray(parsed) ? parsed.join(', ') : String(parsed);
+              } catch {
+                // val remains as is
+              }
             }
           }
           val = String(val ?? '');

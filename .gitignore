@@ -35,3 +35,5 @@ yarn-error.log*
 .nyc_output
 .eslintcache
 coverage
+.vercel
+.env*.local
