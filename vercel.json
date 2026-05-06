@@ -7,19 +7,19 @@
     },
     {
       "source": "/shrestregistration",
-      "destination": "/public/shrestregistration.html"
+      "destination": "/shrestregistration.html"
     },
     {
       "source": "/events",
-      "destination": "/public/events.html"
+      "destination": "/events.html"
     },
     {
       "source": "/qrscanner",
-      "destination": "/public/qrscanner.html"
+      "destination": "/qrscanner.html"
     },
     {
       "source": "/celebration",
-      "destination": "/public/celebration.html"
+      "destination": "/celebration.html"
     }
   ],
   "cleanUrls": true

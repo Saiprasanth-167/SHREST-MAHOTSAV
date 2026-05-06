@@ -1,0 +1,108 @@
+:root{
+  --accent-1: #1a2980;
+  --accent-2: #26d0ce;
+  --muted: #7f8c8d;
+  --glass: rgba(255,255,255,0.08);
+}
+*{box-sizing:border-box}
+html,body{height:100%;}
+body{
+  margin:0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  color:var(--text, #0b1526);
+  /* Poster (preferred), fallback to shipped image, then gradient */
+  background-image: url('/poster.jpg'), url('/SHREST MAHOTSAV (MAIN BANNER).png'), linear-gradient(135deg,#f7b7ff 0%,#b3e5ff 100%);
+  background-size: cover, cover, auto;
+  background-position: center center;
+  background-repeat: no-repeat;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  min-height:100vh;
+}
+
+/* Dark translucent site overlay for legibility */
+.site-overlay{
+  position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:stretch;
+  background: linear-gradient(180deg, rgba(7,18,36,0.36) 0%, rgba(7,18,36,0.28) 40%, rgba(7,18,36,0.32) 100%);
+}
+
+/* Header */
+.site-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;max-width:1200px;margin:0 auto;width:100%}
+.brand{display:flex;align-items:center;gap:14px}
+.brand img{width:56px;height:56px;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,0.12);box-shadow:0 6px 20px rgba(2,6,23,0.22)}
+.brand h1{font-size:1.05rem;margin:0;color:#fff;font-weight:700}
+.brand p{margin:0;font-size:.78rem;color:rgba(255,255,255,0.82)}
+
+/* Central hero */
+.hero{flex:1;display:flex;align-items:center;justify-content:center;padding:36px 18px;width:100%}
+.hero-inner{width:min(94vw,1100px);margin:auto;background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));backdrop-filter: blur(8px);border-radius:16px;padding:30px;display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:center;justify-items:center;box-shadow:0 12px 40px rgba(3,10,25,0.45)}
+.hero-left{color:#fff;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.event-title{font-size:2.6rem;margin:0 0 6px;letter-spacing:0.6px;color:#fff;font-weight:800}
+.event-sub{font-size:1.05rem;margin:0 0 14px;color:rgba(255,255,255,0.85)}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border-radius:12px;border:none;cursor:pointer;font-weight:700;font-size:0.98rem}
+.btn:focus{outline:3px solid rgba(38,208,206,0.18);outline-offset:3px}
+.btn-prim{background:linear-gradient(90deg,var(--accent-1),var(--accent-2));color:#fff;box-shadow:0 8px 22px rgba(26,41,128,0.28)}
+.btn-ghost{background:transparent;border:1.5px solid rgba(255,255,255,0.14);color:#fff}
+.btn-round{border-radius:999px;padding:10px 14px}
+
+/* Right card */
+.hero-right{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));padding:20px;border-radius:12px;color:#fff;border:1px solid rgba(255,255,255,0.04)}
+.card-head{font-weight:800;color:#fff;margin:0 0 10px;font-size:1.05rem}
+.card p{margin:0 0 10px;color:rgba(255,255,255,0.9)}
+.small{font-size:.92rem;color:rgba(255,255,255,0.85)}
+
+/* Modal + forms */
+.modal-backdrop { position:fixed; inset:0; background:rgba(2,6,23,0.6); display:none; align-items:center; justify-content:center; z-index:1000; }
+.modal { width:92%; max-width:520px; background: linear-gradient(180deg,#ffffff 0%, #f8fbff 100%); border-radius:12px; padding:20px; box-shadow:0 18px 50px rgba(2,6,23,0.5); color:#0b1526 }
+.modal h3 { margin:0 0 10px; color:var(--accent-1); font-size:1.05rem }
+.modal .field { margin:10px 0 6px; }
+.modal input[type="password"], .modal input[type="text"] { width:100%; padding:12px; border:1px solid #e6edf3; border-radius:8px; font-size:1rem; }
+.modal .actions { display:flex; gap:10px; margin-top:12px; }
+.btn-secondary { background:#6c7a89; color:#fff; border-radius:8px; padding:10px 12px; border:none }
+.btn-primary { background: linear-gradient(90deg,var(--accent-1), var(--accent-2)); color:#fff; border-radius:8px; padding:10px 12px; border:none }
+.error { color:#e53935; font-size:.92rem; min-height:18px }
+
+/* Utility containers used by public pages */
+.container, .wrap, .fee-side, .title-side { background: rgba(255,255,255,0.96); color: #0b1530 }
+.container, .wrap { border-radius:14px; box-shadow:0 10px 30px rgba(2,6,23,0.08); }
+.title-side { box-shadow:0 10px 30px rgba(2,6,23,0.08); }
+.fee-side { border-radius:12px; box-shadow:0 10px 30px rgba(2,6,23,0.08); }
+
+.container, .wrap, .fee-side, .title-side{
+  margin-left:auto;
+  margin-right:auto;
+}
+
+/* Small helpers */
+.muted{color:var(--muted)}
+.visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
+
+/* Responsive */
+@media (max-width:980px){
+  .hero-inner{grid-template-columns:1fr;padding:20px}
+  .hero-right{order:2}
+  .event-title{font-size:2rem}
+}
+@media (max-width:520px){
+  .brand img{width:44px;height:44px}
+  .event-title{font-size:1.6rem}
+  .btn{font-size:0.95rem;padding:10px 14px}
+}
+
+/* Modal + form styles */
+.modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.45); display:none; align-items:center; justify-content:center; z-index:1000; }
+.modal { width:92%; max-width:420px; background:#fff; border-radius:12px; padding:18px; box-shadow:0 10px 30px rgba(0,0,0,0.25); color:#222 }
+.modal h3 { margin:0 0 10px; color:var(--accent-1); }
+.modal .field { margin:10px 0 6px; }
+.modal input[type="password"], .modal input[type="text"] { width:100%; padding: 10px; border:1.5px solid #dcdde1; border-radius:6px; font-size:1rem; }
+.modal .actions { display:flex; gap:10px; margin-top:12px; }
+.btn-secondary { background:#b2bec3; color:#fff; border-radius:8px; padding:10px 12px; border:none }
+.btn-primary { background: linear-gradient(90deg,var(--accent-1), var(--accent-2)); color:#fff; border-radius:8px; padding:10px 12px; border:none }
+.error { color:#e53935; font-size:.92rem; min-height:18px }
